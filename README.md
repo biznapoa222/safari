@@ -1,66 +1,114 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Safari Travel Booking Platform
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A full-featured safari travel booking and trip-management web application built with **Laravel 12**. It powers a public-facing safari company website plus an admin back office for managing destinations, safaris, accommodation, experiences, itineraries, leads, client proposals, bookings, payments and more.
 
-## About Laravel
+## Tech Stack
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Backend:** PHP 8.2 / Laravel 12
+- **Frontend:** Blade + Vite (Laravel Breeze-style auth)
+- **Database:** MySQL (with `database/database.sqlite` supported for local dev)
+- **Payments:** Stripe + Flutterwave
+- **PDF generation:** `barryvdh/laravel-dompdf`
+- **Email/mail:** Built-in mail with incoming mail (IMAP) fetching via artisan command
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Key Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Public website
+- Destinations, safaris, accommodation, experiences and itineraries pages with slugs/seo
+- Golf & "Tee Off" pages (per country)
+- Blog, FAQs, About, Contact pages (CMS-managed)
+- Enquiry + newsletter subscription
+- Visitor live chat (`/chat/{token}`)
+- Multi-language support (`/language/{locale}`)
+- Public booking form + client proposal viewer (accept / request changes / download PDF)
 
-## Learning Laravel
+### Admin back office (`/admin`)
+- Dashboard
+- Leads & lead tracking (with follow-ups, notes, tags, status logs, tasks, history)
+- Bookings, flights & accommodation booking
+- Itinerary builder (V2), templates and pricing
+- Proposals with versioning, change requests, evaluations and acceptance
+- CMS pages, content blocks & website settings
+- Payments, payment links, supplier invoices & exchange rates
+- Incoming mail inbox + mail settings
+- Audit log & two-factor authentication
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Getting Started
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### Requirements
+- PHP >= 8.2 with required extensions
+- Composer
+- Node.js + npm (for Vite assets)
+- MySQL (or SQLite for quick local dev)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Installation
 
-## Laravel Sponsors
+```bash
+git clone https://github.com/biznapoa222/safari.git
+cd safari
+composer install
+cp .env.example .env      # then edit your DB / mail / payment keys
+php artisan key:generate
+npm install && npm run build
+php artisan migrate --seed
+php artisan serve
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+The app will be available at `http://localhost:8000`.
 
-### Premium Partners
+### Local development (with asset watcher + queue + logs)
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+```bash
+composer run dev
+```
 
-## Contributing
+This runs the Vite dev server, queue worker, `php artisan serve` and live logs together.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Useful artisan commands
 
-## Code of Conduct
+```bash
+php artisan pail          # live log tail
+php artisan queue:work    # process queued jobs
+php artisan fetch:incoming-mail   # pull inbound emails from IMAP
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Project Structure
 
-## Security Vulnerabilities
+```
+app/Http/Controllers/   # Web controllers (public + admin)
+app/Models/             # Eloquent models
+routes/web.php          # All web routes (public + /admin group)
+resources/views/        # Blade templates
+database/migrations/    # Schema
+database/seeders/       # Seed data
+public/                 # Public assets (images, build output)
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Branching & Workflow
+
+- **`main`** is the stable branch. Work on feature branches and open a pull request when done.
+- Keep `.env` out of the repo — it is gitignored. Never commit real credentials.
+- Always run `composer run dev` or at least `npm run dev` while working on views so Vite picks up asset changes.
+
+## Environment Variables (`.env`)
+
+Copy `.env.example` and set at minimum:
+
+| Variable | Purpose |
+| --- | --- |
+| `APP_KEY` | Generated with `php artisan key:generate` |
+| `DB_*` | Database connection |
+| `STRIPE_KEY` / `STRIPE_SECRET` | Stripe payments |
+| `FLUTTERWAVE_*` | Flutterwave payments |
+| `MAIL_*` | Outbound mail |
+| `IMAP_*` | Incoming mail fetching |
+
+## Tests
+
+```bash
+php artisan test
+```
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+MIT (framework skeleton). Project-specific code is proprietary to the owner.
