@@ -1,0 +1,19 @@
+<IfModule mod_rewrite.c>
+    Options -Indexes
+    RewriteEngine On
+
+    # Redirect old bookmarked URLs to the clean address.
+    RewriteCond %{THE_REQUEST} \s/+(.*/)?public(?:[/?\s]) [NC]
+    RewriteRule ^public(?:/(.*))?$ $1 [R=301,L,NE]
+
+    # Public assets remain physically in Laravel's public directory.
+    RewriteRule ^(build|images|storage)/(.*)$ public/$1/$2 [L]
+    RewriteRule ^(favicon\.ico|robots\.txt)$ public/$1 [L]
+
+    # Route all application requests through the clean root front controller.
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ index.php [L]
+</IfModule>
+
+DirectoryIndex index.php

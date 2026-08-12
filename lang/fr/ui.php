@@ -1,0 +1,25 @@
+<?php
+return [
+    'nav' => [
+        'home' => 'Accueil', 'insights' => 'Analyses', 'travel' => 'Voyages', 'activities' => 'Activités',
+        'accommodations' => 'Hébergements', 'facilities' => 'Équipements', 'itineraries' => 'Itinéraires',
+        'itinerary_groups' => 'Groupes d’itinéraires', 'proposals_planning' => 'Planification des offres',
+        'flight_ticket_requests' => 'Demandes de billets', 'operations' => 'Opérations',
+        'destination' => 'Destination', 'fees_and_fares' => 'Frais et tarifs', 'marketing' => 'Marketing',
+        'mobile_app' => 'Application mobile', 'finance' => 'Finance', 'reports' => 'Rapports',
+        'website_cms' => 'CMS du site', 'system_settings' => 'Paramètres système',
+    ],
+    'dashboard' => 'Tableau de bord', 'main_menu' => 'Menu principal', 'choose_language' => 'Choisir la langue',
+    'search_placeholder' => 'Rechercher...', 'view_website' => 'Voir le site', 'good_afternoon' => 'Bonjour',
+    'dashboard_intro' => 'Voici ce qui se passe aujourd’hui dans votre activité safari.',
+    'journeys' => 'Voyages', 'destinations' => 'Destinations', 'why_us' => 'Pourquoi nous',
+    'travel_stories' => 'Carnets de voyage', 'plan_your_safari' => 'Planifier votre safari',
+    'born_in_africa' => 'Né en Afrique · Créé pour vous', 'hero_title_line_1' => 'Là où la nature', 'hero_title_line_2' => 'vous ramène chez vous.',
+    'hero_intro' => 'Des voyages privés et attentionnés en Afrique de l’Est, conçus par ceux qui connaissent chaque route, saison et histoire.',
+    'explore_journeys' => 'Explorer nos voyages', 'watch_our_story' => 'Voir notre histoire',
+    'our_difference' => 'La différence SafariFlow', 'not_just_a_trip' => 'Plus qu’un voyage.', 'story_to_carry' => 'Une histoire à emporter.',
+    'curated_journeys' => 'Voyages sélectionnés', 'begin_your_story' => 'Commencez votre histoire africaine',
+    'where_will_you_go' => 'Où irez-vous ?', 'wild_places' => 'Terres sauvages.', 'deep_connections' => 'Liens profonds.',
+    'start_planning' => 'Commencer à planifier', 'your_safari' => 'Votre safari', 'starts_here' => 'commence ici.',
+    'send_enquiry' => 'Envoyer ma demande', 'enquiry_received' => 'Merci. Un spécialiste safari vous contactera bientôt.',
+];

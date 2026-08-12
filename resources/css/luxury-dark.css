@@ -1,0 +1,45 @@
+:root {
+    --page-bg: #080907;
+    --panel-bg: #10110e;
+    --dark-green: #10291d;
+    --gold: #a58b3e;
+    --light-gold: #c0a75a;
+    --text-primary: #e6dfcf;
+    --text-secondary: #aaa18e;
+    --border-gold: rgba(165, 139, 62, 0.65);
+}
+
+body.proposal-preview {
+    margin: 0;
+    padding: 20px;
+    background: #1a1b18;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.proposal-preview .page {
+    width: 210mm;
+    min-height: 297mm;
+    background: var(--page-bg);
+    box-shadow: 0 4px 20px rgba(0,0,0,.5);
+    margin-bottom: 20px;
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+}
+
+.proposal-preview .page-controls {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: #2a2b28;
+    padding: 10px 20px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}

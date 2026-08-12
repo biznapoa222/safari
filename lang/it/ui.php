@@ -1,0 +1,25 @@
+<?php
+return [
+    'nav' => [
+        'home' => 'Home', 'insights' => 'Analisi', 'travel' => 'Viaggi', 'activities' => 'Attività',
+        'accommodations' => 'Alloggi', 'facilities' => 'Servizi', 'itineraries' => 'Itinerari',
+        'itinerary_groups' => 'Gruppi itinerari', 'proposals_planning' => 'Pianificazione proposte',
+        'flight_ticket_requests' => 'Richieste voli', 'operations' => 'Operazioni',
+        'destination' => 'Destinazione', 'fees_and_fares' => 'Tasse e tariffe', 'marketing' => 'Marketing',
+        'mobile_app' => 'App mobile', 'finance' => 'Finanza', 'reports' => 'Report',
+        'website_cms' => 'CMS sito', 'system_settings' => 'Impostazioni di sistema',
+    ],
+    'dashboard' => 'Dashboard', 'main_menu' => 'Menu principale', 'choose_language' => 'Scegli la lingua',
+    'search_placeholder' => 'Cerca...', 'view_website' => 'Vedi sito', 'good_afternoon' => 'Buon pomeriggio',
+    'dashboard_intro' => 'Ecco cosa succede oggi nella tua attività safari.',
+    'journeys' => 'Viaggi', 'destinations' => 'Destinazioni', 'why_us' => 'Perché noi',
+    'travel_stories' => 'Storie di viaggio', 'plan_your_safari' => 'Pianifica il safari',
+    'born_in_africa' => 'Nato in Africa · Creato per te', 'hero_title_line_1' => 'Dove la natura', 'hero_title_line_2' => 'ti chiama a casa.',
+    'hero_intro' => 'Viaggi privati e curati in Africa orientale, progettati da chi conosce ogni strada, stagione e storia.',
+    'explore_journeys' => 'Scopri i viaggi', 'watch_our_story' => 'La nostra storia',
+    'our_difference' => 'La differenza SafariFlow', 'not_just_a_trip' => 'Non solo un viaggio.', 'story_to_carry' => 'Una storia da portare con te.',
+    'curated_journeys' => 'Viaggi selezionati', 'begin_your_story' => 'Inizia la tua storia africana',
+    'where_will_you_go' => 'Dove andrai?', 'wild_places' => 'Luoghi selvaggi.', 'deep_connections' => 'Legami profondi.',
+    'start_planning' => 'Inizia a pianificare', 'your_safari' => 'Il tuo safari', 'starts_here' => 'inizia qui.',
+    'send_enquiry' => 'Invia la richiesta', 'enquiry_received' => 'Grazie. Uno specialista safari ti contatterà presto.',
+];

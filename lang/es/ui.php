@@ -1,0 +1,25 @@
+<?php
+return [
+    'nav' => [
+        'home' => 'Inicio', 'insights' => 'Análisis', 'travel' => 'Viajes', 'activities' => 'Actividades',
+        'accommodations' => 'Alojamientos', 'facilities' => 'Instalaciones', 'itineraries' => 'Itinerarios',
+        'itinerary_groups' => 'Grupos de itinerarios', 'proposals_planning' => 'Planificación de propuestas',
+        'flight_ticket_requests' => 'Solicitudes de vuelos', 'operations' => 'Operaciones',
+        'destination' => 'Destino', 'fees_and_fares' => 'Tasas y tarifas', 'marketing' => 'Marketing',
+        'mobile_app' => 'Aplicación móvil', 'finance' => 'Finanzas', 'reports' => 'Informes',
+        'website_cms' => 'CMS del sitio', 'system_settings' => 'Configuración del sistema',
+    ],
+    'dashboard' => 'Panel', 'main_menu' => 'Menú principal', 'choose_language' => 'Elegir idioma',
+    'search_placeholder' => 'Buscar...', 'view_website' => 'Ver sitio web', 'good_afternoon' => 'Buenas tardes',
+    'dashboard_intro' => 'Esto es lo que ocurre hoy en tu negocio de safaris.',
+    'journeys' => 'Viajes', 'destinations' => 'Destinos', 'why_us' => 'Por qué nosotros',
+    'travel_stories' => 'Historias de viaje', 'plan_your_safari' => 'Planifica tu safari',
+    'born_in_africa' => 'Nacido en África · Creado para ti', 'hero_title_line_1' => 'Donde la naturaleza', 'hero_title_line_2' => 'te llama a casa.',
+    'hero_intro' => 'Viajes privados y cuidados por África Oriental, diseñados por quienes conocen cada camino, estación e historia.',
+    'explore_journeys' => 'Explorar viajes', 'watch_our_story' => 'Ver nuestra historia',
+    'our_difference' => 'La diferencia SafariFlow', 'not_just_a_trip' => 'No es solo un viaje.', 'story_to_carry' => 'Una historia contigo.',
+    'curated_journeys' => 'Viajes seleccionados', 'begin_your_story' => 'Comienza tu historia africana',
+    'where_will_you_go' => '¿Adónde irás?', 'wild_places' => 'Lugares salvajes.', 'deep_connections' => 'Conexiones profundas.',
+    'start_planning' => 'Empezar a planificar', 'your_safari' => 'Tu safari', 'starts_here' => 'empieza aquí.',
+    'send_enquiry' => 'Enviar mi consulta', 'enquiry_received' => 'Gracias. Un especialista en safaris se pondrá en contacto pronto.',
+];

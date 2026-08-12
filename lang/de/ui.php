@@ -1,0 +1,25 @@
+<?php
+return [
+    'nav' => [
+        'home' => 'Startseite', 'insights' => 'Einblicke', 'travel' => 'Reisen', 'activities' => 'Aktivitäten',
+        'accommodations' => 'Unterkünfte', 'facilities' => 'Ausstattung', 'itineraries' => 'Reisepläne',
+        'itinerary_groups' => 'Reiseplangruppen', 'proposals_planning' => 'Angebotsplanung',
+        'flight_ticket_requests' => 'Flugticket-Anfragen', 'operations' => 'Betrieb',
+        'destination' => 'Reiseziel', 'fees_and_fares' => 'Gebühren & Tarife', 'marketing' => 'Marketing',
+        'mobile_app' => 'Mobile App', 'finance' => 'Finanzen', 'reports' => 'Berichte',
+        'website_cms' => 'Website CMS', 'system_settings' => 'Systemeinstellungen',
+    ],
+    'dashboard' => 'Übersicht', 'main_menu' => 'Hauptmenü', 'choose_language' => 'Sprache wählen',
+    'search_placeholder' => 'Alles durchsuchen...', 'view_website' => 'Website ansehen', 'good_afternoon' => 'Guten Tag',
+    'dashboard_intro' => 'Das passiert heute in Ihrem Safari-Unternehmen.',
+    'journeys' => 'Reisen', 'destinations' => 'Reiseziele', 'why_us' => 'Warum wir',
+    'travel_stories' => 'Reisegeschichten', 'plan_your_safari' => 'Safari planen',
+    'born_in_africa' => 'In Afrika geboren · Für Sie gestaltet', 'hero_title_line_1' => 'Wo die Wildnis', 'hero_title_line_2' => 'Sie nach Hause ruft.',
+    'hero_intro' => 'Private, durchdachte Reisen durch Ostafrika, gestaltet von Menschen, die jede Straße, Jahreszeit und Geschichte kennen.',
+    'explore_journeys' => 'Reisen entdecken', 'watch_our_story' => 'Unsere Geschichte',
+    'our_difference' => 'Der SafariFlow-Unterschied', 'not_just_a_trip' => 'Nicht nur eine Reise.', 'story_to_carry' => 'Eine Geschichte fürs Leben.',
+    'curated_journeys' => 'Ausgewählte Reisen', 'begin_your_story' => 'Ihre Afrika-Geschichte beginnt',
+    'where_will_you_go' => 'Wohin geht es?', 'wild_places' => 'Wilde Orte.', 'deep_connections' => 'Tiefe Verbindungen.',
+    'start_planning' => 'Planung beginnen', 'your_safari' => 'Ihre Safari', 'starts_here' => 'beginnt hier.',
+    'send_enquiry' => 'Anfrage senden', 'enquiry_received' => 'Vielen Dank. Ein Safari-Spezialist meldet sich in Kürze.',
+];
