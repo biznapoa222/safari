@@ -25,12 +25,32 @@
         ['name'=>'Vipingo Ridge PGA Baobab Course','country'=>'Kenya','location'=>'Kilifi','description'=>'A coastal par-72 championship course with dramatic ridge views, native baobabs and PGA-accredited facilities.','image'=>'https://images.unsplash.com/photo-1592919505780-303950717480?auto=format&fit=crop&w=1200&q=86&fm=webp','url'=>'https://www.vipingoridge.com/golf'],
     ];
     $packages = [
-        ['title'=>'The Great Rift Valley Golf Safari Circuit','country'=>'Kenya','duration'=>'8 Days','price'=>'On request','summary'=>'A Kenya golf circuit with Rift Valley fairways, wildlife landscapes and relaxed safari pacing.','image'=>'https://images.unsplash.com/photo-1592919505780-303950717480?auto=format&fit=crop&w=1200&q=86&fm=webp'],
-        ['title'=>'The Coastal Golf and Beach Safari Circuit','country'=>'Kenya','duration'=>'6 Days','price'=>'On request','summary'=>'A coastal golf escape with Indian Ocean calm, beach time and carefully arranged rounds.','image'=>'https://images.unsplash.com/photo-1593111774240-d529f12cf4bb?auto=format&fit=crop&w=1200&q=86&fm=webp'],
-        ['title'=>'Rwanda Championship Golf Week','country'=>'Rwanda','duration'=>'7 Days','price'=>'On request','summary'=>'Kigali golf with gorilla trekking and elegant highland travel in Rwanda.','image'=>'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=1200&q=86&fm=webp'],
-        ['title'=>'Queen Elizabeth & Tooro Golf Safari','country'=>'Uganda','duration'=>'Tailor-made','price'=>'On request','summary'=>'Uganda golf paired with highland landscapes, wildlife and warm local hosting.','image'=>'https://images.unsplash.com/photo-1540573133985-87b6da6d54a9?auto=format&fit=crop&w=1200&q=86&fm=webp'],
-        ['title'=>'South Africa Golf Travel','country'=>'South Africa','duration'=>'7 Days','price'=>'On request','summary'=>'Cape golf, wine country, coastal beauty and polished private travel.','image'=>'https://images.unsplash.com/photo-1580060839134-75a5edca2e99?auto=format&fit=crop&w=1200&q=86&fm=webp'],
+        ['title'=>'The Great Rift Valley Golf Safari Circuit','country'=>'Kenya','duration'=>'8 Days','price'=>'On request','summary'=>'A Kenya golf circuit with Rift Valley fairways, wildlife landscapes and relaxed safari pacing.','image'=>'https://images.unsplash.com/photo-1592919505780-303950717480?auto=format&fit=crop&w=1200&q=86&fm=webp','slug'=>'the-great-rift-valley-golf-safari-circuit'],
+        ['title'=>'The Coastal Golf and Beach Safari Circuit','country'=>'Kenya','duration'=>'6 Days','price'=>'On request','summary'=>'A coastal golf escape with Indian Ocean calm, beach time and carefully arranged rounds.','image'=>'https://images.unsplash.com/photo-1593111774240-d529f12cf4bb?auto=format&fit=crop&w=1200&q=86&fm=webp','slug'=>'the-coastal-golf-and-beach-safari-circuit'],
+        ['title'=>'Rwanda Championship Golf Week','country'=>'Rwanda','duration'=>'7 Days','price'=>'From USD 6,000','summary'=>'Kigali golf with gorilla trekking and elegant highland travel in Rwanda.','image'=>'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=1200&q=86&fm=webp','slug'=>'rwanda-championship-golf-week'],
+        ['title'=>'Queen Elizabeth & Tooro Golf Safari','country'=>'Uganda','duration'=>'Tailor-made','price'=>'On request','summary'=>'Uganda golf paired with highland landscapes, wildlife and warm local hosting.','image'=>'https://images.unsplash.com/photo-1540573133985-87b6da6d54a9?auto=format&fit=crop&w=1200&q=86&fm=webp','slug'=>'queen-elizabeth-tooro-golf-safari'],
+        ['title'=>'South Africa Golf Travel','country'=>'South Africa','duration'=>'7 Days','price'=>'On request','summary'=>'Cape golf, wine country, coastal beauty and polished private travel.','image'=>'https://images.unsplash.com/photo-1580060839134-75a5edca2e99?auto=format&fit=crop&w=1200&q=86&fm=webp','slug'=>'7-days-6-nights-south-africa-golf-travel'],
     ];
+    // Prefer live published Rwanda/country golf safaris from DB when available
+    $dbPackages = \App\Models\ItineraryV2::where('published', true)
+        ->when($countryName, fn ($q) => $q->where('country', $countryName))
+        ->where(function ($q) {
+            $q->where('title', 'like', '%golf%')->orWhere('slug', 'like', '%golf%')->orWhere('summary', 'like', '%golf%');
+        })
+        ->orderByDesc('featured')
+        ->get()
+        ->map(fn ($s) => [
+            'title' => $s->title,
+            'country' => $s->country,
+            'duration' => $s->duration_days ? $s->duration_days.' Days' : 'Tailor-made',
+            'price' => $s->price_from ? ('USD '.number_format((float) $s->price_from)) : 'On request',
+            'summary' => \Illuminate\Support\Str::limit($s->summary, 140),
+            'image' => is_array($s->images) && count($s->images) ? \App\Support\MediaPath::publicUrl($s->images[0]) : $hero,
+            'slug' => $s->slug,
+        ])->all();
+    if ($countryName && count($dbPackages)) {
+        $packages = $dbPackages;
+    }
     if (! empty($countryName)) {
         $courses = collect($courses)->where('country', $countryName)->values()->all() ?: $courses;
         $packages = collect($packages)->where('country', $countryName)->values()->all() ?: [[
@@ -76,7 +96,7 @@
     <div class="section-heading"><div><x-public.section-label :label="$cms('packages_label', 'Golf Itineraries')" /><h2>{{ $countryName ? $countryName.' golf ideas' : $cms('packages_title', 'Choose a fairway, then make it yours') }}</h2></div><a href="{{ route('public.booking', $countryName ? ['destination' => $countryName] : ['safari_type' => 'Golf safari']) }}">Plan a golf trip<i data-lucide="arrow-right"></i></a></div>
     <div class="golf-package-grid">
         @foreach($packages as $pkg)
-            @php $packageUrl=route('public.contact',['destination'=>$pkg['country']]); @endphp
+            @php $packageUrl = !empty($pkg['slug']) && \App\Models\ItineraryV2::where('slug', $pkg['slug'])->where('published', true)->exists() ? route('public.safaris.show', $pkg['slug']) : route('public.booking', ['destination' => $pkg['country']]); @endphp
             <article class="golf-package-card">
                 <a href="{{ $packageUrl }}" class="golf-package-image-link"><img src="{{ $pkg['image'] }}" alt="{{ $pkg['title'] }}" loading="lazy"><span>Plan this golf trip</span></a>
                 <div class="golf-package-body">

@@ -57,7 +57,8 @@ return new class extends Migration
         if (!Schema::hasTable('itinerary_highlights')) {
             Schema::create('itinerary_highlights', function (Blueprint $table) {
                 $table->id();
-                $table->morphs('highlightable');
+                $table->string('highlightable_type');
+                $table->unsignedBigInteger('highlightable_id');
                 $table->index(['highlightable_type', 'highlightable_id'], 'highlightable_idx');
                 $table->string('title');
                 $table->text('description')->nullable();
@@ -70,7 +71,8 @@ return new class extends Migration
         if (!Schema::hasTable('itinerary_day_gallery_images')) {
             Schema::create('itinerary_day_gallery_images', function (Blueprint $table) {
                 $table->id();
-                $table->morphs('galleryable');
+                $table->string('galleryable_type');
+                $table->unsignedBigInteger('galleryable_id');
                 $table->index(['galleryable_type', 'galleryable_id'], 'day_gallery_idx');
                 $table->string('image_path');
                 $table->string('caption')->nullable();

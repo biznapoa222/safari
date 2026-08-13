@@ -1,0 +1,36 @@
+PAGES
+1|blog|ultimate-guide-luxury-safari-east-africa|The Ultimate Guide to Planning a Luxury Safari in East Africa|1
+2|blog|kenya-through-your-senses|Kenya Through Your Senses: A Safari Beyond the Photographs|1
+V2
+1|10-day-kenya-family-safari-indian-ocean|10-Day Kenya Family Safari & Indian Ocean|Kenya|1|1
+2|7-day-tanzania-northern-circuit-classic|7-Day Tanzania Northern Circuit Classic|Tanzania|1|1
+3|5-day-luxury-botswana-safari|5-Day Luxury Botswana Safari|Botswana|1|0
+ITIN
+1|10-day-kenya-family-safari-indian-ocean|10-Day Kenya Family Safari & Indian Ocean|published
+2|7-day-tanzania-northern-circuit|7-Day Tanzania Northern Circuit|published
+ACC
+1||Mara Serena Safari Lodge|Kenya|1
+2||Serengeti Serena Safari Lodge|Tanzania|1
+3||Chobe Game Lodge|Botswana|1
+ACT
+1|maasai-mara-balloon-safari|Maasai Mara Balloon Safari|Kenya
+2|mount-longonot-guided-hike|Mount Longonot Guided Hike|Kenya
+3|nairobi-national-park-day-trip|Nairobi National Park Day Trip|Kenya
+4|gorilla-trekking-permit|Gorilla Trekking Permit|Uganda
+5|cultural-maasai-village-visit|Cultural Maasai Village Visit|Kenya
+6|chobe-river-safari|Chobe River Safari|Botswana
+CO
+1|kenya|Kenya
+2|tanzania|Tanzania
+3|uganda|Uganda
+4|south-africa|South Africa
+5|namibia|Namibia
+6|botswana|Botswana
+DEST
+1|Nairobi|Kenya
+2|Amboseli National Park|Kenya
+3|Tsavo National Park|Kenya
+4|Diani Beach|Kenya
+TEMPLATES
+1|-||active
+BLOCKS=0

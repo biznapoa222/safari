@@ -120,7 +120,9 @@ class PublicController extends Controller
         $activities=Activity::with('translations')->where('published_on_website',true)->where('country',$name)->limit(6)->get();
         $accommodations=Accommodation::where('published',true)->where('country',$name)->limit(6)->get();
         $settings=WebsiteSetting::home();
-        return view('public.destination-show',compact('settings','destination','safaris','activities','accommodations','name','slug'));
+        $countryGuide = CmsPage::where('type', 'destination')->where('slug', $slug)->where('published', true)->first();
+
+        return view('public.destination-show', compact('settings', 'destination', 'safaris', 'activities', 'accommodations', 'name', 'slug', 'countryGuide'));
     }
 
     public function destinationSection(string $slug, string $section): View
@@ -357,6 +359,17 @@ class PublicController extends Controller
         $settings = WebsiteSetting::home();
 
         return view('public.blog', compact('settings', 'posts'));
+    }
+
+    public function cmsPage(string $slug): View
+    {
+        $post = CmsPage::where('slug', $slug)
+            ->whereIn('type', ['page', 'destination'])
+            ->where('published', true)
+            ->firstOrFail();
+        $settings = WebsiteSetting::home();
+
+        return view('public.cms-page', compact('settings', 'post'));
     }
 
     public function blogPost(string $slug): View
@@ -715,7 +728,7 @@ class PublicController extends Controller
             'priority' => 'medium',
             'status' => 'new',
             'travel_type' => 'safari',
-            'accommodation_tier' => $data['budget'] && str_contains(strtolower($data['budget']), 'luxury') ? 'luxury' : null,
+            'accommodation_tier' => ! empty($data['budget'] ?? null) && str_contains(strtolower((string) $data['budget']), 'luxury') ? 'luxury' : null,
             'internal_notes' => $lead->notes,
             'special_requests' => $data['message'] ?? null,
             'itinerary_template_id' => $itinerary && ($itinerary['type'] ?? null) === 'template' ? $itinerary['id'] : null,
@@ -762,19 +775,20 @@ class PublicController extends Controller
                 'image' => 'elephant-8677546-scaled.jpg',
             ],
             'uganda' => [
-                'summary' => 'Gorilla forests, chimpanzees, crater lakes, Nile adventures and deeply personal wildlife encounters.',
+                'summary' => 'Gorilla forests, chimpanzees, crater lakes, Nile adventures, highland golf and deeply personal wildlife encounters.',
                 'parks' => 'Bwindi, Queen Elizabeth, Murchison Falls, Kibale and Lake Mburo each bring a different rhythm of forest, savannah, river and highland travel.',
-                'highlights' => 'Gorilla trekking, chimpanzee tracking, Nile rafting, birding, crater lake scenery, forest walks and warm local encounters.',
+                'highlights' => 'Gorilla trekking, chimpanzee tracking, Nile rafting, birding, crater lake scenery, forest walks, and golf at Tooro, Lake Victoria Serena or Lake Mburo.',
                 'wildlife' => 'Mountain gorillas, chimpanzees, tree-climbing lions, elephants, hippos, shoebill and remarkable birdlife are Uganda standouts.',
                 'image' => 'Nile-Uganda-scaled.jpg',
             ],
             'rwanda' => [
-                'summary' => 'A compact, polished journey with Kigali, Volcanoes National Park, gorillas, golden monkeys and refined highland lodges.',
-                'parks' => 'Volcanoes, Akagera and Nyungwe create a clear circuit of gorillas, savannah wildlife, forest canopy walks and lake-country pauses.',
-                'highlights' => 'Gorilla trekking, golden monkeys, Kigali culture, lake stays, canopy walks and smooth short-stay logistics.',
-                'wildlife' => 'Mountain gorillas, golden monkeys, chimpanzees, forest birds and Akagera savannah wildlife are Rwanda\'s key draws.',
+                'summary' => 'The Land of a Thousand Hills: gorilla trekking in Volcanoes National Park, Akagera savannah safari, Nyungwe forests, Twin Lakes scenery, Kigali culture and championship golf.',
+                'parks' => 'Volcanoes National Park for mountain gorillas and golden monkeys; Akagera National Park for Big Five savannah game drives and Lake Ihema boat cruises; Nyungwe Forest National Park for chimpanzees and canopy walks.',
+                'highlights' => 'Gorilla trekking permits, golden monkey tracking, Kigali city tours, Twin Lakes (Burera & Ruhondo), Akagera game drives, Lake Ihema sunsets, Nyungwe canopy walks, and golf at Kigali Golf Resort & Villas or Karenge Hills.',
+                'wildlife' => 'Mountain gorillas, golden monkeys, chimpanzees, lions, elephants, giraffes, hippos, crocodiles and rich forest and water birdlife.',
                 'image' => 'gorilla-7708352-scaled.jpg',
             ],
+
             'south-africa' => [
                 'summary' => 'Private reserves, Cape Town, wine country, dramatic coastlines, cuisine and some of Africa\'s finest golf.',
                 'parks' => 'Kruger, Greater Kruger private reserves, Addo, Pilanesberg and coastal reserves offer flexible safari options with excellent guiding and infrastructure.',
@@ -783,9 +797,9 @@ class PublicController extends Controller
                 'image' => 'Cape-Town-scaled.jpg',
             ],
             'namibia' => [
-                'summary' => 'Sculptural dunes, desert-adapted wildlife, remote lodges, stargazing and beautiful overland routes.',
+                'summary' => 'Sculptural dunes, desert-adapted wildlife, remote lodges, stargazing, overland routes and rare desert golf.',
                 'parks' => 'Etosha, Namib-Naukluft, Skeleton Coast, Damaraland and private desert reserves shape Namibia\'s most memorable journeys.',
-                'highlights' => 'Sossusvlei dunes, desert elephants, scenic flights, remote camps, photography, self-drive and privately guided overland travel.',
+                'highlights' => 'Sossusvlei dunes, desert elephants, scenic flights, remote camps, photography, self-drive, privately guided overland travel and optional Rossmund desert golf.',
                 'wildlife' => 'Desert-adapted elephant, rhino, oryx, springbok, giraffe, lion and rare arid-land species are Namibia highlights.',
                 'image' => 'namibianheart-camel-shishifootsteps-scaled.jpg',
             ],

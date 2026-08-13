@@ -179,10 +179,15 @@ class EvaluationController extends Controller
             'matched_invoices' => $invoices->where('status', 'approved')->count(),
         ];
 
-        return view('admin.evaluations.show', compact(
-            'quotation', 'entries', 'invoices', 'evaluation', 'summary',
-            'missing', 'auditLogs',
-        ));
+        return view('admin.evaluations.show', [
+            'quotation' => $record,
+            'entries' => $entries,
+            'invoices' => $invoices,
+            'evaluation' => $evaluation,
+            'summary' => $summary,
+            'missing' => $missing,
+            'auditLogs' => $auditLogs,
+        ]);
     }
 
     public function uploadDocument(Request $request): RedirectResponse
@@ -425,7 +430,7 @@ class EvaluationController extends Controller
 
     public function approve(Request $request, int $quotation): RedirectResponse
     {
-        $this->syncEntries($quotation);
+        $this->evaluationService->syncEntries($quotation);
         $entries = DB::table('evaluation_entries')->where('quotation_id', $quotation);
         $entryCount = (clone $entries)->count();
         $openEntries = (clone $entries)->where('status', '!=', 'matched')->count();
@@ -612,5 +617,16 @@ class EvaluationController extends Controller
             DB::table('reservations')->where('id', $reservation)->where('quotation_id', $quotation)->exists(),
             422, 'The reservation does not belong to this proposal.',
         );
+    }
+
+    private function invoiceIsComplete(?object $invoice): bool
+    {
+        if ($invoice === null) {
+            return false;
+        }
+
+        return filled($invoice->invoice_date)
+            && filled($invoice->invoice_number)
+            && (float) ($invoice->amount ?? 0) > 0;
     }
 }
