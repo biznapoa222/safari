@@ -12,7 +12,7 @@
         'accommodation' => asset('images/itineraries/botswana-luxury-cover.webp'),
         'cta' => \App\Support\MediaPath::publicUrl($cms('cta_image', 'images/itineraries/tanzania-crater-day.webp')),
     ];
-    $youtubeId = $cms('youtube_id') ?: '1CYVG70ZbyQ';
+    $youtubeId = $cms('youtube_id') ?: 'iG5nlWiP9Ro';
 
     $countryImages = collect(['Kenya','Tanzania','Uganda','Rwanda','South Africa','Namibia','Botswana'])->mapWithKeys(function ($country) use ($settings) {
         $media = $settings->mediaFor(\Illuminate\Support\Str::slug($country));
@@ -567,7 +567,7 @@
     <div class="blog-grid">
         <?php $__currentLoopData = $blogPosts; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $post): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
             <article class="blog-card">
-                <a href="<?php echo e(route('public.blog.post', $post->slug)); ?>" class="blog-image-link"><img src="<?php echo e($post->cover_image ?: 'https://images.unsplash.com/photo-1489392191049-fc10c97e64b6?auto=format&fit=crop&w=900&q=82&fm=webp'); ?>" alt="<?php echo e($post->title); ?>" loading="lazy"></a>
+                <a href="<?php echo e(route('public.blog.post', $post->slug)); ?>" class="blog-image-link"><img src="<?php echo e(\App\Support\MediaPath::publicUrl($post->cover_image) ?: 'https://images.unsplash.com/photo-1489392191049-fc10c97e64b6?auto=format&fit=crop&w=900&q=82&fm=webp'); ?>" alt="<?php echo e($post->title); ?>" loading="lazy"></a>
                 <div>
                     <?php if (isset($component)) { $__componentOriginalef375b1d2be2fadf1abf4fd72c1d16c4 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginalef375b1d2be2fadf1abf4fd72c1d16c4 = $attributes; } ?>

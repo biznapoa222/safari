@@ -101,7 +101,10 @@ HTML;
                 'notes' => $notes,
                 'published' => true,
                 'featured' => true,
-                'images' => ['images/itineraries/tanzania-crater-day.webp', 'images/itineraries/kenya-family-cover.webp'],
+                'images' => [
+                    'https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?auto=format&fit=crop&w=1600&q=84&fm=webp',
+                    'https://images.unsplash.com/photo-1517853782856-d7cc5de7a7fc?auto=format&fit=crop&w=1600&q=84&fm=webp',
+                ],
             ]
         );
 
@@ -179,7 +182,10 @@ HTML;
                 'notes' => '<p>Built from Shishi Footsteps Rwanda destination themes: gorilla trekking, golden monkeys, Akagera safari and optional Nyungwe chimpanzees.</p>',
                 'published' => true,
                 'featured' => false,
-                'images' => ['images/itineraries/tanzania-crater-day.webp'],
+                'images' => [
+                    'https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?auto=format&fit=crop&w=1600&q=84&fm=webp',
+                    'https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&w=1600&q=84&fm=webp',
+                ],
             ]
         );
 
@@ -224,7 +230,13 @@ HTML;
                     'activity_status' => 'active',
                     'currency' => 'USD',
                     'min_pax' => 1,
-                    'images' => ['images/itineraries/tanzania-crater-day.webp'],
+                    'images' => [
+                        str_contains(Str::lower($location), 'nyungwe')
+                            ? 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1600&q=84&fm=webp'
+                            : (str_contains(Str::lower($location), 'kigali') || str_contains(Str::lower($name), 'golf')
+                                ? 'https://images.unsplash.com/photo-1593111774240-d529f12cf4bb?auto=format&fit=crop&w=1600&q=84&fm=webp'
+                                : 'https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?auto=format&fit=crop&w=1600&q=84&fm=webp'),
+                    ],
                 ]
             );
         }

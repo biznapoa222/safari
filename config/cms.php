@@ -50,7 +50,7 @@ return [
         'faqs'=>['label'=>'FAQs page','fields'=>[
             'hero_title'=>['label'=>'Hero title','type'=>'text','default'=>'Frequently Asked Questions'],
             'hero_subtitle'=>['label'=>'Hero subtitle','type'=>'textarea','default'=>'Everything you need to know about planning your African golf safari and travel experiences.'],
-            'hero_image'=>['label'=>'Hero image','type'=>'image','default'=>''],
+            'hero_image'=>['label'=>'Hero image','type'=>'image','default'=>'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=2200&q=84&fm=webp'],
             'editorial_title'=>['label'=>'Editorial title','type'=>'text','default'=>'Your questions, answered'],
             'editorial_text'=>['label'=>'Editorial text','type'=>'textarea','default'=>'Whether you are planning a golf tour, combining a safari with your rounds, or arranging a complete African holiday, we are here to make the process effortless. Below you will find answers to the most common questions our travellers ask.'],
         ]],

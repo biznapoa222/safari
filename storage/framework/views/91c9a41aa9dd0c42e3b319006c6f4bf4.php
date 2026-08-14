@@ -1,19 +1,19 @@
-<?php $__env->startSection('title', 'Blog | Shishi Footsteps'); ?>
-<?php $__env->startSection('description', 'Safari planning notes, travel inspiration and destination stories from Shishi Footsteps.'); ?>
+<?php $__env->startSection('title', ($destination ? $destination.' journal' : 'Blog').' | Shishi Footsteps'); ?>
+<?php $__env->startSection('description', $destination ? 'Safari stories, seasonal notes and travel inspiration for '.$destination.' from Shishi Footsteps.' : 'Safari planning notes, travel inspiration and destination stories from Shishi Footsteps.'); ?>
 
 <?php $__env->startSection('content'); ?>
-<?php $hero = 'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=1800&q=82&fm=webp'; $cms=fn($key,$fallback='')=>\App\Models\CmsContentBlock::value('blog',$key,$fallback); ?>
+<?php $hero = 'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=1800&q=82&fm=webp'; $cms=fn($key,$fallback='')=>\App\Models\CmsContentBlock::value('blog',$key,$fallback); $destination = $destination ?? ''; ?>
 
 <?php if (isset($component)) { $__componentOriginal7667e390c55120bda1fc27c0189959e9 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal7667e390c55120bda1fc27c0189959e9 = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.public.page-hero','data' => ['label' => 'Travel Guides','title' => $cms('hero_title'),'subtitle' => $cms('hero_subtitle'),'image' => \App\Support\MediaPath::publicUrl($cms('hero_image',$hero))]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.public.page-hero','data' => ['label' => 'Travel Guides','title' => $destination ? $destination.' journal' : $cms('hero_title'),'subtitle' => $destination ? 'Stories, seasonal notes and planning ideas for a private '.$destination.' safari.' : $cms('hero_subtitle'),'image' => \App\Support\MediaPath::publicUrl($cms('hero_image',$hero))]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
 <?php $component->withName('public.page-hero'); ?>
 <?php if ($component->shouldRender()): ?>
 <?php $__env->startComponent($component->resolveView(), $component->data()); ?>
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
 <?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
 <?php endif; ?>
-<?php $component->withAttributes(['label' => 'Travel Guides','title' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($cms('hero_title')),'subtitle' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($cms('hero_subtitle')),'image' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(\App\Support\MediaPath::publicUrl($cms('hero_image',$hero)))]); ?>
+<?php $component->withAttributes(['label' => 'Travel Guides','title' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($destination ? $destination.' journal' : $cms('hero_title')),'subtitle' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($destination ? 'Stories, seasonal notes and planning ideas for a private '.$destination.' safari.' : $cms('hero_subtitle')),'image' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(\App\Support\MediaPath::publicUrl($cms('hero_image',$hero)))]); ?>
 <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal7667e390c55120bda1fc27c0189959e9)): ?>
@@ -29,7 +29,7 @@
     <div class="blog-grid">
         <?php $__empty_1 = true; $__currentLoopData = $posts; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $post): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
             <article class="blog-card">
-                <a href="<?php echo e(route('public.blog.post', $post->slug)); ?>" class="blog-image-link"><img src="<?php echo e($post->cover_image ?: 'https://images.unsplash.com/photo-1489392191049-fc10c97e64b6?auto=format&fit=crop&w=900&q=82&fm=webp'); ?>" alt="<?php echo e($post->title); ?>" loading="lazy"></a>
+                <a href="<?php echo e(route('public.blog.post', $post->slug)); ?>" class="blog-image-link"><img src="<?php echo e(\App\Support\MediaPath::publicUrl($post->cover_image) ?: 'https://images.unsplash.com/photo-1489392191049-fc10c97e64b6?auto=format&fit=crop&w=900&q=82&fm=webp'); ?>" alt="<?php echo e($post->title); ?>" loading="lazy"></a>
                 <div>
                     <?php if (isset($component)) { $__componentOriginalef375b1d2be2fadf1abf4fd72c1d16c4 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginalef375b1d2be2fadf1abf4fd72c1d16c4 = $attributes; } ?>

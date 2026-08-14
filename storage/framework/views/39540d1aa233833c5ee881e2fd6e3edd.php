@@ -28,8 +28,12 @@ foreach ($attributes->all() as $__key => $__value) {
 
 unset($__defined_vars, $__key, $__value); ?>
 
-<section class="page-hero">
-    <a href="<?php echo e($url ?? '#start'); ?>" class="page-hero-image-link" aria-label="Explore <?php echo e($title); ?>"><img src="<?php echo e($image); ?>" alt="<?php echo e($title); ?>" loading="eager"></a>
+<section <?php echo e($attributes->merge(['class' => 'page-hero'])); ?>>
+    <?php if($url): ?>
+        <a href="<?php echo e($url); ?>" class="page-hero-image-link" aria-label="Explore <?php echo e($title); ?>"><img src="<?php echo e($image); ?>" alt="<?php echo e($title); ?>" loading="eager"></a>
+    <?php else: ?>
+        <div class="page-hero-image-link"><img src="<?php echo e($image); ?>" alt="<?php echo e($title); ?>" loading="eager"></div>
+    <?php endif; ?>
     <?php if($youtubeId): ?>
         <div class="hero-youtube-container" data-hero-video>
             <iframe

@@ -95,16 +95,16 @@ class WordPressContentSeeder extends Seeder
             ['golf', 'cta_title', 'text', 'Where Passion for Golf Meets the Spirit of Adventure'],
             ['blog', 'hero_title', 'text', 'Our Journal'],
             ['blog', 'hero_subtitle', 'textarea', $journal['summary'] ?? 'Traveler stories, expert guides, and insider tips to fuel your wanderlust.'],
-            ['faqs', 'hero_title', 'text', 'Frequently Asked Questions'],
-            ['faqs', 'hero_subtitle', 'textarea', $faqs['summary'] ?? 'Answers about safari planning, destinations, wildlife and travel with Shishi Footsteps.'],
-            ['faqs', 'editorial_title', 'text', 'Your questions, answered'],
-            ['faqs', 'editorial_text', 'textarea', 'Whether you are planning a golf tour, combining a safari with your rounds, or arranging a complete African holiday, we are here to make the process effortless.'],
+            ['faqs', 'hero_title', 'text', 'Questions, before the journey'],
+            ['faqs', 'hero_subtitle', 'textarea', $faqs['summary'] ?? 'Planning notes on countries, wildlife seasons, gorilla permits, golf, lodges, visas and how a Shishi Footsteps proposal comes together.'],
+            ['faqs', 'editorial_title', 'text', 'Ask us anything'],
+            ['faqs', 'editorial_text', 'textarea', 'From first enquiry to the last sundowner: destinations, seasons, camps, golf, families and the practical details of travelling with us.'],
             ['about', 'mission_title', 'text', 'To be the premier provider of luxury golf and safari experiences in Africa'],
             ['about', 'mission_text', 'textarea', 'Renowned for offering exceptional golf and safari experiences alongside the continent\'s breathtaking natural beauty and rich cultural heritage.'],
             ['about', 'vision_title', 'text', 'Travel that leaves more than footprints'],
             ['about', 'vision_text', 'textarea', 'To deliver unparalleled journeys that seamlessly blend world-class golfing and safari with wildlife, pristine beaches, and vibrant culture.'],
-            ['booking', 'hero_title', 'text', 'Enquire Now'],
-            ['booking', 'hero_subtitle', 'textarea', 'Tell us about your dream safari or golf journey and our specialists will shape the itinerary around you.'],
+            ['booking', 'hero_title', 'text', 'Request a private proposal'],
+            ['booking', 'hero_subtitle', 'textarea', 'Tell a trip advisor the country, the season and the way you like to travel. We will return a written itinerary and quote.'],
         ];
 
         foreach ($blocks as [$page, $key, $type, $value]) {
@@ -400,8 +400,10 @@ class WordPressContentSeeder extends Seeder
         return match ($country) {
             'Tanzania' => 'images/itineraries/tanzania-classic-cover.webp',
             'Botswana' => 'images/itineraries/botswana-luxury-cover.webp',
-            'South Africa' => 'images/itineraries/tanzania-crater-day.webp',
-            'Uganda', 'Rwanda' => 'images/itineraries/tanzania-crater-day.webp',
+            'South Africa' => 'https://images.unsplash.com/photo-1484318571209-661cf29a69c3?auto=format&fit=crop&w=1600&q=84&fm=webp',
+            'Uganda' => 'https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?auto=format&fit=crop&w=1600&q=84&fm=webp',
+            'Rwanda' => 'https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?auto=format&fit=crop&w=1600&q=84&fm=webp',
+            'Namibia' => 'https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=1600&q=84&fm=webp',
             default => 'images/itineraries/kenya-family-cover.webp',
         };
     }

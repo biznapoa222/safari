@@ -47,7 +47,20 @@
             <?php
                 $countryMedia = $websiteSettings->mediaFor($slug);
                 $image = \App\Support\MediaPath::publicUrl($countryMedia['hero']);
-                $menuGallery = collect($countryMedia['gallery'])->map(fn ($path) => \App\Support\MediaPath::publicUrl($path))->filter()->values();
+                $menuTiles = $websiteSettings->menuTilesFor($slug);
+                $golfUrl = in_array($slug, $golfCountries, true) ? route('public.tee-off.country', $slug) : route('public.golf');
+                $tiles = [
+                    ['Safaris and tours', 'binoculars', route('public.destinations.section', [$slug, 'safaris-and-tours'])],
+                    ['Discover '.$name, 'compass', route('public.destinations.section', [$slug, 'discover'])],
+                    ['National parks', 'trees', route('public.destinations.section', [$slug, 'national-parks'])],
+                    ['Accommodation', 'bed-double', route('public.destinations.section', [$slug, 'accommodation'])],
+                    ['Highlights', 'sparkles', route('public.destinations.section', [$slug, 'highlights'])],
+                    ['Activities', 'footprints', route('public.destinations.section', [$slug, 'activities'])],
+                    ['Wildlife', 'paw-print', route('public.destinations.section', [$slug, 'wildlife'])],
+                    ['Golf safaris', 'flag', $golfUrl],
+                    ['Journal', 'book-open', route('public.destinations.section', [$slug, 'journal'])],
+                    ['Travellers reviews', 'quote', route('public.destinations.section', [$slug, 'reviews'])],
+                ];
             ?>
             <div class="country-nav">
                 <a href="<?php echo e(route('public.destinations.show', $slug)); ?>"><?php echo e($name); ?> <i data-lucide="chevron-down"></i></a>
@@ -55,12 +68,9 @@
                     <div class="country-mega-main">
                         <h2>VIEW <?php echo e(strtoupper($name)); ?> SAFARI IDEAS</h2>
                         <div class="country-mega-grid">
-                            <?php
-                                $sectionKeys = ['safaris-and-tours','discover','national-parks','accommodation','highlights','activities','wildlife'];
-                            ?>
-                            <?php $__currentLoopData = [['Safaris and tours','binoculars'],['Discover '.$name,'compass'],['National parks','trees'],['Accommodation','bed-double'],['Highlights','sparkles'],['Activities','footprints'],['Wildlife','paw-print'],['Golf safaris','flag']]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $tile): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <a href="<?php echo e($i === 7 ? (in_array($slug, $golfCountries) ? route('public.tee-off.country', $slug) : route('public.golf')) : route('public.destinations.section', [$slug, $sectionKeys[$i]])); ?>">
-                                    <img src="<?php echo e($menuGallery[$i % max(1, $menuGallery->count())] ?? $image); ?>" alt="<?php echo e($tile[0]); ?> in <?php echo e($name); ?>"><span><i data-lucide="<?php echo e($tile[1]); ?>"></i><?php echo e($tile[0]); ?></span>
+                            <?php $__currentLoopData = $tiles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $tile): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <a href="<?php echo e($tile[2]); ?>">
+                                    <img src="<?php echo e($menuTiles[$i] ?? $image); ?>" alt="<?php echo e($tile[0]); ?> in <?php echo e($name); ?>" loading="lazy"><span><i data-lucide="<?php echo e($tile[1]); ?>"></i><?php echo e($tile[0]); ?></span>
                                 </a>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </div>
@@ -79,15 +89,15 @@
                 <div class="country-mega-main">
                     <h2>GOLF SAFARI</h2>
                     <div class="country-mega-grid">
-                        <a href="<?php echo e(route('public.golf')); ?>"><img src="<?php echo e(asset('images/wordpress/golf-787826_1280.png')); ?>" alt="All golf safaris"><span><i data-lucide="flag"></i>All Golf Safaris</span></a>
-                        <a href="<?php echo e(route('public.tee-off.country', 'kenya')); ?>"><img src="<?php echo e(asset('images/wordpress/golf-1208900_1280.jpg')); ?>" alt="Kenya golf"><span><i data-lucide="flag"></i>Kenya Golf</span></a>
-                        <a href="<?php echo e(route('public.tee-off.country', 'rwanda')); ?>"><img src="<?php echo e(asset('images/wordpress/kigali-4811535-scaled.jpg')); ?>" alt="Rwanda golf"><span><i data-lucide="flag"></i>Rwanda Golf</span></a>
-                        <a href="<?php echo e(route('public.tee-off.country', 'south-africa')); ?>"><img src="<?php echo e(asset('images/wordpress/sa-golf.jpeg')); ?>" alt="South Africa golf"><span><i data-lucide="flag"></i>South Africa Golf</span></a>
+                        <a href="<?php echo e(route('public.golf')); ?>"><img src="https://images.unsplash.com/photo-1592919505780-303950717480?auto=format&fit=crop&w=900&q=84&fm=webp" alt="All golf safaris"><span><i data-lucide="flag"></i>All Golf Safaris</span></a>
+                        <a href="<?php echo e(route('public.tee-off.country', 'kenya')); ?>"><img src="https://images.unsplash.com/photo-1535131749006-b7f58c99034b?auto=format&fit=crop&w=900&q=84&fm=webp" alt="Kenya golf"><span><i data-lucide="flag"></i>Kenya Golf</span></a>
+                        <a href="<?php echo e(route('public.tee-off.country', 'rwanda')); ?>"><img src="https://images.unsplash.com/photo-1593111774240-d529f12cf4bb?auto=format&fit=crop&w=900&q=84&fm=webp" alt="Rwanda golf"><span><i data-lucide="flag"></i>Rwanda Golf</span></a>
+                        <a href="<?php echo e(route('public.tee-off.country', 'south-africa')); ?>"><img src="https://images.unsplash.com/photo-1580060839134-75a5edca2e99?auto=format&fit=crop&w=900&q=84&fm=webp" alt="South Africa golf"><span><i data-lucide="flag"></i>South Africa Golf</span></a>
                     </div>
                 </div>
                 <aside>
                     <h3>Start the adventure!</h3>
-                    <a href="<?php echo e(route('public.golf')); ?>" class="mega-feature-image"><img src="<?php echo e(asset('images/wordpress/golf-787826_1280.png')); ?>" alt="Golf"></a>
+                    <a href="<?php echo e(route('public.golf')); ?>" class="mega-feature-image"><img src="https://images.unsplash.com/photo-1592919505780-303950717480?auto=format&fit=crop&w=1200&q=84&fm=webp" alt="Golf"></a>
                     <p>Championship golf, carefully timed tee sheets and smooth travel between Africa's most rewarding courses.</p>
                     <a href="<?php echo e(route('public.golf')); ?>">Explore golf</a>
                 </aside>

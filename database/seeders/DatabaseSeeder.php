@@ -49,5 +49,7 @@ class DatabaseSeeder extends Seeder
         $this->call(WordPressContentSeeder::class);
         $this->call(RwandaContentSeeder::class);
         $this->call(DestinationCountriesSeeder::class);
+        $this->call(MediaIntegritySeeder::class);
+        $this->call(JournalContentSeeder::class);
     }
 }

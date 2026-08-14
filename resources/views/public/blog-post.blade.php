@@ -2,10 +2,10 @@
 
 @section('title', $post->seo_title ?: $post->title.' | Shishi Footsteps')
 @section('description', $post->seo_description ?: \Illuminate\Support\Str::limit(strip_tags($post->content), 150))
-@section('og_image', $post->cover_image ?: $settings->open_graph_image)
+@section('og_image', \App\Support\MediaPath::publicUrl($post->cover_image) ?: $settings->open_graph_image)
 
 @section('content')
-<x-public.page-hero label="Travel Guide" :title="$post->title" :subtitle="$post->seo_description" :image="$post->cover_image ?: 'https://images.unsplash.com/photo-1489392191049-fc10c97e64b6?auto=format&fit=crop&w=1800&q=82&fm=webp'" />
+<x-public.page-hero label="Travel Guide" :title="$post->title" :subtitle="$post->seo_description" :image="\App\Support\MediaPath::publicUrl($post->cover_image) ?: 'https://images.unsplash.com/photo-1489392191049-fc10c97e64b6?auto=format&fit=crop&w=1800&q=82&fm=webp'" />
 
 <article class="article-body">
     {!! $post->content !!}

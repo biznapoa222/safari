@@ -45,7 +45,7 @@ unset($__defined_vars, $__key, $__value); ?>
     <div class="search-dropdown-results hidden" role="listbox" aria-label="Search results" style="position:absolute;left:0;right:0;top:100%;margin-top:6px;background:#fff;border:1px solid #d9d0c1;border-radius:12px;box-shadow:0 12px 28px rgba(0,0,0,.08);z-index:999;max-height:340px;overflow-y:auto"></div>
 </div>
 
-<?php if (! $__env->hasRenderedOnce('278eb2d8-cc20-45f4-9305-f1f8048a50c1')): $__env->markAsRenderedOnce('278eb2d8-cc20-45f4-9305-f1f8048a50c1'); ?>
+<?php if (! $__env->hasRenderedOnce('1a259a5a-43fa-4301-a843-4dc490014ea1')): $__env->markAsRenderedOnce('1a259a5a-43fa-4301-a843-4dc490014ea1'); ?>
 <?php $__env->startPush('styles'); ?>
 <style>
 .search-dropdown { position:relative; }
