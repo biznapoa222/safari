@@ -31,7 +31,7 @@ class EvaluationWorkflowTest extends TestCase
             'document' => UploadedFile::fake()->create('mara-invoice.pdf', 120, 'application/pdf'),
         ])->assertSessionHasNoErrors();
 
-        $invoice = DB::table('supplier_invoices')->where('quotation_id', $quotation->id)->first();
+        $invoice = DB::table('supplier_invoices')->where('company_name', 'Mara Test Camp')->first();
         $this->assertNotNull($invoice);
         $this->assertSame('uploaded', $invoice->status);
         Storage::disk('local')->assertExists($invoice->file_path);

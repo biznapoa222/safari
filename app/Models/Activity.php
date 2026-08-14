@@ -4,7 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Activity extends Model
@@ -37,6 +39,16 @@ class Activity extends Model
     public function translations(): HasMany
     {
         return $this->hasMany(ActivityTranslation::class);
+    }
+
+    public function suppliers(): BelongsToMany
+    {
+        return $this->belongsToMany(Supplier::class, 'activity_supplier');
+    }
+
+    public function paymentScheme(): MorphOne
+    {
+        return $this->morphOne(PaymentScheme::class, 'schemeable');
     }
 
     public function translation(?string $locale = null): ?ActivityTranslation

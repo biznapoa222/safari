@@ -65,7 +65,7 @@ class AccommodationController extends Controller
         $data = $this->validateHotel($request);
         $id = DB::table('hotels')->insertGetId([
             ...$data,
-            'status' => $request->boolean('status'),
+            'status' => $this->resolveHotelStatus($request),
             'created_at' => now(), 'updated_at' => now(),
         ]);
 
@@ -94,7 +94,7 @@ class AccommodationController extends Controller
         abort_unless(DB::table('hotels')->where('id', $hotel)->exists(), 404);
         DB::table('hotels')->where('id', $hotel)->update([
             ...$this->validateHotel($request),
-            'status' => $request->boolean('status'),
+            'status' => $this->resolveHotelStatus($request),
             'updated_at' => now(),
         ]);
 
@@ -131,13 +131,17 @@ class AccommodationController extends Controller
             'name' => ['required', 'string', 'max:120'],
             'max_adults' => ['required', 'integer', 'min:1', 'max:12'],
             'max_children' => ['required', 'integer', 'min:0', 'max:12'],
-            'baby_max_age' => ['required', 'integer', 'min:0', 'max:17'],
-            'child_min_age' => ['required', 'integer', 'min:0', 'max:17'],
-            'child_max_age' => ['required', 'integer', 'min:0', 'max:17'],
-            'adult_min_age' => ['required', 'integer', 'min:1', 'max:30'],
+            'baby_max_age' => ['nullable', 'integer', 'min:0', 'max:17'],
+            'child_min_age' => ['nullable', 'integer', 'min:0', 'max:17'],
+            'child_max_age' => ['nullable', 'integer', 'min:0', 'max:17'],
+            'adult_min_age' => ['nullable', 'integer', 'min:1', 'max:30'],
             'inventory' => ['required', 'integer', 'min:1', 'max:500'],
             'notes' => ['nullable', 'string', 'max:1000'],
         ]);
+        $data['baby_max_age'] = $data['baby_max_age'] ?? 2;
+        $data['child_min_age'] = $data['child_min_age'] ?? 3;
+        $data['child_max_age'] = $data['child_max_age'] ?? 11;
+        $data['adult_min_age'] = $data['adult_min_age'] ?? 12;
         $this->validateRoomAgeBands($data);
         DB::table('room_types')->insert([
             ...$data, 'hotel_id' => $hotel,
@@ -188,9 +192,13 @@ class AccommodationController extends Controller
 
     private function validateHotel(Request $request): array
     {
-        return $request->validate([
+        $data = $request->validate([
             'name' => ['required', 'string', 'max:180'],
+            'country' => ['nullable', 'string', 'max:120'],
+            'location' => ['nullable', 'string', 'max:180'],
             'destination_id' => ['nullable', 'exists:destinations,id'],
+            'supplier_type' => ['nullable', 'string', 'max:120'],
+            'luxury_level' => ['nullable', 'string', 'max:120'],
             'star_rating' => ['nullable', 'integer', 'min:1', 'max:7'],
             'tier' => ['nullable', 'string', 'max:120'],
             'meal_plan' => ['nullable', 'string', 'max:120'],
@@ -204,7 +212,37 @@ class AccommodationController extends Controller
             'currency' => ['required', 'string', 'size:3'],
             'default_markup_percent' => ['required', 'numeric', 'min:0', 'max:500'],
             'rates' => ['nullable', 'string', 'max:5000'],
+            'published' => ['nullable'],
         ]);
+
+        if (! empty($data['destination_id']) && (empty($data['country']) || empty($data['location']))) {
+            $destination = DB::table('destinations')->find($data['destination_id']);
+            if ($destination) {
+                $data['country'] = $data['country'] ?? $destination->country;
+                $data['location'] = $data['location'] ?? $destination->name;
+            }
+        }
+
+        $data['country'] = $data['country'] ?: 'Unassigned';
+        $data['location'] = $data['location'] ?: ($data['country'] ?: 'Unassigned');
+        $data['supplier_type'] = $data['supplier_type'] ?? 'recommended';
+        $data['luxury_level'] = $data['luxury_level'] ?? ($data['tier'] ?? 'standard');
+        if (empty($data['tier']) && ! empty($data['supplier_type'])) {
+            $data['tier'] = $data['supplier_type'];
+        }
+        $data['published'] = $request->boolean('published');
+
+        return $data;
+    }
+
+    private function resolveHotelStatus(Request $request): string|int|bool
+    {
+        $status = $request->input('status', '1');
+        if (in_array((string) $status, ['active', 'inactive'], true)) {
+            return $status;
+        }
+
+        return $request->boolean('status') ? 1 : 0;
     }
 
     private function destinationOptions()

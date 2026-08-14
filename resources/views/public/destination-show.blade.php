@@ -21,7 +21,7 @@
 
 <section class="country-tour-hero">
     <a href="{{ route('public.booking', ['destination' => $name]) }}" class="country-hero-image-link" aria-label="Plan a {{ $name }} safari"><img src="{{ $heroImage }}" alt="{{ $name }} safari"></a>
-    <div><span>Tailor-made journeys</span><h1>{{ strtoupper($name) }} TOURS</h1><p>{{ $copy[$slug] }}</p></div>
+    <div><span>Tailor-made journeys</span><h1>{{ strtoupper($name) }} TOURS</h1><p>{{ ($countryGuide?->seo_description ?? null) ?: $copy[$slug] }}</p></div>
 </section>
 
 <nav class="country-breadcrumb">

@@ -14,7 +14,7 @@
         'accommodation' => asset('images/itineraries/botswana-luxury-cover.webp'),
         'cta' => \App\Support\MediaPath::publicUrl($cms('cta_image', 'images/itineraries/tanzania-crater-day.webp')),
     ];
-    $youtubeId = $cms('youtube_id') ?: '1CYVG70ZbyQ';
+    $youtubeId = $cms('youtube_id') ?: 'iG5nlWiP9Ro';
 
     $countryImages = collect(['Kenya','Tanzania','Uganda','Rwanda','South Africa','Namibia','Botswana'])->mapWithKeys(function ($country) use ($settings) {
         $media = $settings->mediaFor(\Illuminate\Support\Str::slug($country));
@@ -263,7 +263,7 @@
     <div class="blog-grid">
         @foreach($blogPosts as $post)
             <article class="blog-card">
-                <a href="{{ route('public.blog.post', $post->slug) }}" class="blog-image-link"><img src="{{ $post->cover_image ?: 'https://images.unsplash.com/photo-1489392191049-fc10c97e64b6?auto=format&fit=crop&w=900&q=82&fm=webp' }}" alt="{{ $post->title }}" loading="lazy"></a>
+                <a href="{{ route('public.blog.post', $post->slug) }}" class="blog-image-link"><img src="{{ \App\Support\MediaPath::publicUrl($post->cover_image) ?: 'https://images.unsplash.com/photo-1489392191049-fc10c97e64b6?auto=format&fit=crop&w=900&q=82&fm=webp' }}" alt="{{ $post->title }}" loading="lazy"></a>
                 <div>
                     <x-public.section-label :label="$post->published_at?->format('M d, Y') ?? 'Travel Guide'" />
                     <h2>{{ $post->title }}</h2>

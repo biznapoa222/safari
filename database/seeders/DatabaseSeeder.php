@@ -37,14 +37,19 @@ class DatabaseSeeder extends Seeder
             ActivityCategory::create(['name' => $cat, 'slug' => Str::slug($cat)]);
         }
 
-        // Create default admin user
+        // Create default admin user (password aligned with UserAccessSeeder / auth tests)
         \App\Models\User::firstOrCreate(
             ['email' => 'erp@biznapoa.com'],
-            ['name' => 'Super Admin', 'password' => bcrypt('5226414@kip'), 'role' => 'administrator', 'is_active' => true]
+            ['name' => 'Super Admin', 'password' => bcrypt('shishi2026'), 'role' => 'administrator', 'is_active' => true]
         );
 
         $this->call(UserAccessSeeder::class);
         $this->call(V2DemoSeeder::class);
         $this->call(KenyaWheelsSafariTemplateSeeder::class);
+        $this->call(WordPressContentSeeder::class);
+        $this->call(RwandaContentSeeder::class);
+        $this->call(DestinationCountriesSeeder::class);
+        $this->call(MediaIntegritySeeder::class);
+        $this->call(JournalContentSeeder::class);
     }
 }

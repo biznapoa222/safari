@@ -32,6 +32,7 @@
         @else
             <a href="{{ route('public.golf') }}">Golf safari</a>
         @endif
+        <a href="{{ route('public.blog', ['destination' => $name]) }}">All journal stories</a>
     </aside>
 
     <article class="destination-section-story">
@@ -50,9 +51,62 @@
         <div class="destination-section-actions">
             <a href="{{ route('public.booking', ['destination' => $name, 'interest' => $sectionData['nav']]) }}" class="button hero-primary">Plan your {{ $name }} trip<i data-lucide="arrow-up-right"></i></a>
             <a href="{{ route('public.destinations.show', $slug) }}" class="button hero-secondary">View full {{ $name }} overview<i data-lucide="arrow-up-right"></i></a>
+            @if($section === 'journal')
+                <a href="{{ route('public.blog', ['destination' => $name]) }}" class="button hero-secondary">Browse the full journal<i data-lucide="book-open"></i></a>
+            @endif
+            @if($section === 'reviews')
+                <a href="{{ route('public.booking', ['destination' => $name]) }}" class="button hero-secondary">Request a proposal<i data-lucide="pen-line"></i></a>
+            @endif
         </div>
     </article>
 </section>
+
+@if($section === 'reviews' && ($travellerReviews ?? []))
+    <section class="traveller-reviews-band" id="reviews">
+        <div class="section-heading">
+            <div>
+                <x-public.section-label label="Guest notes" />
+                <h2>{{ $name }} in their words</h2>
+            </div>
+        </div>
+        <div class="traveller-reviews">
+            @foreach($travellerReviews as $review)
+                <article class="traveller-review{{ $loop->even ? ' traveller-review--end' : '' }}">
+                    <img src="{{ \App\Support\MediaPath::publicUrl($review['image']) }}" alt="{{ $review['image_alt'] ?? $review['trip'] }}" loading="lazy">
+                    <div>
+                        <blockquote>{{ $review['quote'] }}</blockquote>
+                        <p>
+                            <strong>{{ $review['name'] }}</strong>
+                            <span>{{ $review['from'] }} · {{ $review['trip'] }}</span>
+                        </p>
+                    </div>
+                </article>
+            @endforeach
+        </div>
+    </section>
+@endif
+
+@if($section !== 'reviews' && ($journalPosts ?? collect())->isNotEmpty())
+    <section class="content-band destination-related">
+        <div class="section-heading">
+            <div>
+                <x-public.section-label label="The journal" />
+                <h2>{{ $name }} stories to read</h2>
+            </div>
+            <a href="{{ route('public.blog', ['destination' => $name]) }}">All articles<i data-lucide="arrow-right"></i></a>
+        </div>
+        <div class="destination-related-grid">
+            @foreach($journalPosts as $post)
+                <a href="{{ route('public.blog.post', $post->slug) }}" class="destination-related-card">
+                    <img src="{{ \App\Support\MediaPath::publicUrl($post->cover_image) ?: 'https://images.unsplash.com/photo-1489392191049-fc10c97e64b6?auto=format&fit=crop&w=900&q=84&fm=webp' }}" alt="{{ $post->title }}" loading="lazy">
+                    <small>Journal</small>
+                    <strong>{{ $post->title }}</strong>
+                    <span>{{ $post->published_at?->format('M d, Y') ?: 'Travel story' }}</span>
+                </a>
+            @endforeach
+        </div>
+    </section>
+@endif
 
 @if($safaris->isNotEmpty() || $activities->isNotEmpty() || $accommodations->isNotEmpty())
     <section class="content-band destination-related">

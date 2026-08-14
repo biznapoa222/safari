@@ -1,7 +1,11 @@
 @props(['label', 'title', 'subtitle' => null, 'image', 'url' => null, 'youtubeId' => null])
 
-<section class="page-hero">
-    <a href="{{ $url ?? '#start' }}" class="page-hero-image-link" aria-label="Explore {{ $title }}"><img src="{{ $image }}" alt="{{ $title }}" loading="eager"></a>
+<section {{ $attributes->merge(['class' => 'page-hero']) }}>
+    @if($url)
+        <a href="{{ $url }}" class="page-hero-image-link" aria-label="Explore {{ $title }}"><img src="{{ $image }}" alt="{{ $title }}" loading="eager"></a>
+    @else
+        <div class="page-hero-image-link"><img src="{{ $image }}" alt="{{ $title }}" loading="eager"></div>
+    @endif
     @if($youtubeId)
         <div class="hero-youtube-container" data-hero-video>
             <iframe

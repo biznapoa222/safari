@@ -4,136 +4,83 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/**
+ * Preserve operational hotels schema while adding CMS/template columns.
+ * Earlier versions of this migration dropped hotels and broke ops seeders/quotations.
+ */
 return new class extends Migration
 {
     public function up(): void
     {
-        // Disable FK checks to allow dropping
-        DB::statement('SET FOREIGN_KEY_CHECKS=0');
+        if (! Schema::hasTable('hotels')) {
+            return;
+        }
 
-        Schema::dropIfExists('proposal_template_settings');
-        Schema::dropIfExists('template_day_activities');
-        Schema::dropIfExists('template_pricing');
-        Schema::dropIfExists('template_days');
-        Schema::dropIfExists('itinerary_templates');
-        Schema::dropIfExists('hotels');
-
-        // Recreate proposal_template_settings (was dropped above)
-        Schema::create('proposal_template_settings', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('itinerary_template_id')->constrained('itinerary_templates')->cascadeOnDelete();
-            $table->json('settings')->nullable();
-            $table->timestamps();
+        Schema::table('hotels', function (Blueprint $table) {
+            if (! Schema::hasColumn('hotels', 'destination_id')) {
+                $table->unsignedBigInteger('destination_id')->nullable()->after('name');
+            }
+            if (! Schema::hasColumn('hotels', 'star_rating')) {
+                $table->integer('star_rating')->default(3)->nullable();
+            }
+            if (! Schema::hasColumn('hotels', 'tier')) {
+                $table->string('tier')->nullable();
+            }
+            if (! Schema::hasColumn('hotels', 'meal_plan')) {
+                $table->string('meal_plan')->nullable();
+            }
+            if (! Schema::hasColumn('hotels', 'description')) {
+                $table->text('description')->nullable();
+            }
+            if (! Schema::hasColumn('hotels', 'amenities')) {
+                $table->json('amenities')->nullable();
+            }
+            if (! Schema::hasColumn('hotels', 'hero_image')) {
+                $table->string('hero_image')->nullable();
+            }
+            if (! Schema::hasColumn('hotels', 'gallery')) {
+                $table->json('gallery')->nullable();
+            }
+            if (! Schema::hasColumn('hotels', 'website')) {
+                $table->string('website')->nullable();
+            }
+            if (! Schema::hasColumn('hotels', 'gps')) {
+                $table->string('gps')->nullable();
+            }
+            if (! Schema::hasColumn('hotels', 'rates')) {
+                $table->json('rates')->nullable();
+            }
+            if (! Schema::hasColumn('hotels', 'deleted_at')) {
+                $table->softDeletes();
+            }
         });
 
-        DB::statement('SET FOREIGN_KEY_CHECKS=1');
+        // Ensure template tables use itinerary_template_id (not legacy template_id).
+        if (Schema::hasTable('template_days') && Schema::hasColumn('template_days', 'template_id') && ! Schema::hasColumn('template_days', 'itinerary_template_id')) {
+            Schema::table('template_days', function (Blueprint $table) {
+                $table->unsignedBigInteger('itinerary_template_id')->nullable()->after('id');
+            });
 
-        // Recreate hotels with correct schema
-        Schema::create('hotels', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->foreignId('destination_id')->nullable()->constrained('destinations')->nullOnDelete();
-            $table->integer('star_rating')->default(3);
-            $table->string('tier')->nullable();
-            $table->string('meal_plan')->nullable();
-            $table->text('description')->nullable();
-            $table->json('amenities')->nullable();
-            $table->string('hero_image')->nullable();
-            $table->json('gallery')->nullable();
-            $table->string('website')->nullable();
-            $table->string('gps')->nullable();
-            $table->json('rates')->nullable();
-            $table->boolean('status')->default(true);
-            $table->softDeletes();
-            $table->timestamps();
-        });
+            if (Schema::getConnection()->getDriverName() === 'sqlite') {
+                \Illuminate\Support\Facades\DB::statement('UPDATE template_days SET itinerary_template_id = template_id');
+            } else {
+                \Illuminate\Support\Facades\DB::statement('UPDATE template_days SET itinerary_template_id = template_id WHERE itinerary_template_id IS NULL');
+            }
+        }
 
-        // Recreate itinerary_templates
-        Schema::create('itinerary_templates', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('trip_name')->nullable();
-            $table->foreignId('destination_id')->nullable()->constrained('destinations')->nullOnDelete();
-            $table->integer('duration_days')->default(1);
-            $table->string('category')->nullable();
-            $table->text('overview')->nullable();
-            $table->text('highlights')->nullable();
-            $table->text('includes')->nullable();
-            $table->text('excludes')->nullable();
-            $table->text('terms')->nullable();
-            $table->text('booking_terms')->nullable();
-            $table->text('payment_schedule')->nullable();
-            $table->text('cancellation_policy')->nullable();
-            $table->text('refund_policy')->nullable();
-            $table->text('important_notes')->nullable();
-            $table->text('notes')->nullable();
-            $table->string('status')->default('draft');
-            $table->softDeletes();
-            $table->timestamps();
-        });
-
-        // Recreate template_days
-        Schema::create('template_days', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('itinerary_template_id')->constrained('itinerary_templates')->cascadeOnDelete();
-            $table->integer('day_number');
-            $table->date('date')->nullable();
-            $table->string('title')->nullable();
-            $table->foreignId('destination_id')->nullable()->constrained('destinations')->nullOnDelete();
-            $table->foreignId('hotel_id')->nullable()->constrained('hotels')->nullOnDelete();
-            $table->string('hotel_name')->nullable();
-            $table->string('room_type')->nullable();
-            $table->string('meal_plan')->nullable();
-            $table->text('morning_activity')->nullable();
-            $table->text('afternoon_activity')->nullable();
-            $table->text('evening_activity')->nullable();
-            $table->text('description')->nullable();
-            $table->text('destination_intro')->nullable();
-            $table->string('image')->nullable();
-            $table->text('wildlife_highlights')->nullable();
-            $table->text('included_services')->nullable();
-            $table->text('optional_activities')->nullable();
-            $table->text('notes')->nullable();
-            $table->integer('sort_order')->default(0);
-            $table->timestamps();
-            $table->index('itinerary_template_id');
-        });
-
-        // Recreate template_pricing
-        Schema::create('template_pricing', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('itinerary_template_id')->constrained('itinerary_templates')->cascadeOnDelete();
-            $table->string('currency', 3)->default('USD');
-            $table->decimal('price_per_person', 12, 2)->nullable();
-            $table->decimal('single_supplement', 12, 2)->nullable();
-            $table->decimal('total_cost', 14, 2)->nullable();
-            $table->text('notes')->nullable();
-            $table->timestamps();
-        });
-
-        // Recreate template_day_activities
-        Schema::create('template_day_activities', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('template_day_id')->constrained('template_days')->cascadeOnDelete();
-            $table->foreignId('activity_id')->nullable()->constrained('activities')->nullOnDelete();
-            $table->string('activity_name')->nullable();
-            $table->text('description')->nullable();
-            $table->string('start_time')->nullable();
-            $table->string('end_time')->nullable();
-            $table->decimal('price', 10, 2)->nullable();
-            $table->boolean('is_optional')->default(false);
-            $table->boolean('is_included')->default(true);
-            $table->integer('sort_order')->default(0);
-            $table->timestamps();
-        });
+        if (! Schema::hasTable('proposal_template_settings')) {
+            Schema::create('proposal_template_settings', function (Blueprint $table) {
+                $table->id();
+                $table->unsignedBigInteger('itinerary_template_id');
+                $table->json('settings')->nullable();
+                $table->timestamps();
+                $table->index('itinerary_template_id');
+            });
+        }
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('template_day_activities');
-        Schema::dropIfExists('template_pricing');
-        Schema::dropIfExists('template_days');
-        Schema::dropIfExists('itinerary_templates');
-        Schema::dropIfExists('hotels');
+        // Non-destructive forward migration; nothing safe to reverse automatically.
     }
 };

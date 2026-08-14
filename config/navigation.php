@@ -55,6 +55,7 @@ return [
         'Roles',
         'Users',
     ]],
+    ['label' => 'Website CMS', 'icon' => 'globe', 'route' => 'admin.cms.index'],
     ['label' => 'Content', 'icon' => 'badge-dollar-sign', 'children' => [
         'Languages',
         'Mails',

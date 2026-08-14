@@ -6,21 +6,24 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
+        if (! Schema::hasTable('hotels')) {
+            return;
+        }
+
         Schema::table('hotels', function (Blueprint $table) {
-            $table->decimal('default_markup_percent', 6, 2)->default(20)->after('gps');
-            $table->string('currency', 3)->default('USD')->after('default_markup_percent');
+            if (! Schema::hasColumn('hotels', 'default_markup_percent')) {
+                $table->decimal('default_markup_percent', 6, 2)->default(20);
+            }
+            if (! Schema::hasColumn('hotels', 'currency')) {
+                $table->string('currency', 3)->default('USD');
+            }
         });
     }
 
     public function down(): void
     {
-        Schema::table('hotels', function (Blueprint $table) {
-            $table->dropColumn(['default_markup_percent', 'currency']);
-        });
+        // Keep columns; they are part of the operational hotels schema.
     }
 };

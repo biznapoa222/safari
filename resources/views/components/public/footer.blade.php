@@ -15,6 +15,7 @@
         <nav class="footer-legal">
             <a href="{{ route('public.about') }}#terms">Terms and conditions</a>
             <a href="{{ route('public.about') }}#privacy">Privacy policy</a>
+            <a href="{{ route('public.faqs') }}">FAQs</a>
             <a href="{{ route('public.contact') }}">Contact us</a>
         </nav>
     </section>
@@ -38,9 +39,9 @@
         <a href="{{ route('public.about') }}#responsible-travel">Responsible travel</a>
         <a href="{{ route('public.contact') }}">Flying Doctors</a>
         <a href="{{ route('public.about') }}">About Shishi Footsteps</a>
-        <a href="{{ route('public.contact') }}#faq">Frequently asked questions</a>
+        <a href="{{ route('public.faqs') }}">Frequently asked questions</a>
         <a href="{{ route('public.blog') }}">Travel stories</a>
-        <a href="{{ route('public.booking') }}">Plan your safari</a>
+        <a href="{{ route('public.booking') }}">Request a proposal</a>
     </nav>
 
     <section class="footer-newsletter">

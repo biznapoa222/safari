@@ -72,10 +72,17 @@ class PublicController extends Controller
             ->where('status', 'active')
             ->get()
             ->filter(function ($t) use ($country, $search) {
-                if ($country && ($t->destination?->country !== $country)) return false;
+                $destination = $t->destination;
+                $destinationCountry = $destination ? $destination->country : null;
+                $destinationName = $destination ? $destination->name : '';
+                if ($country && $destinationCountry !== $country) {
+                    return false;
+                }
                 if ($search) {
-                    $like = stripos($t->name.' '.$t->trip_name.' '.($t->destination?->name ?? '').' '.($t->destination?->country ?? ''), $search);
-                    if ($like === false) return false;
+                    $haystack = $t->name.' '.$t->trip_name.' '.$destinationName.' '.$destinationCountry;
+                    if (stripos($haystack, $search) === false) {
+                        return false;
+                    }
                 }
                 return true;
             })
@@ -107,20 +114,39 @@ class PublicController extends Controller
 
     public function destinationShow(string $slug): View
     {
-        $names=['kenya'=>'Kenya','tanzania'=>'Tanzania','uganda'=>'Uganda','rwanda'=>'Rwanda','south-africa'=>'South Africa','namibia'=>'Namibia','botswana'=>'Botswana'];
-        abort_unless(isset($names[$slug]),404); $name=$names[$slug];
-        $destination=Country::with('regions')->where('slug',$slug)->orWhere('name',$name)->first() ?? (object)['name'=>$name,'slug'=>$slug,'description'=>null,'regions'=>collect()];
-        $v2safaris=ItineraryV2::where('published',true)->where('country',$name)->orderByDesc('featured')->get();
-        $templateSafaris = ItineraryTemplate::with(['days', 'destination', 'pricing'])
-            ->where('status', 'active')
-            ->get()
-            ->filter(fn ($t) => $t->destination?->country === $name)
-            ->map(fn ($t) => $this->templateToItinerary($t));
-        $safaris = $v2safaris->concat($templateSafaris)->take(8);
-        $activities=Activity::with('translations')->where('published_on_website',true)->where('country',$name)->limit(6)->get();
-        $accommodations=Accommodation::where('published',true)->where('country',$name)->limit(6)->get();
-        $settings=WebsiteSetting::home();
-        return view('public.destination-show',compact('settings','destination','safaris','activities','accommodations','name','slug'));
+        $names = [
+            'kenya' => 'Kenya',
+            'tanzania' => 'Tanzania',
+            'uganda' => 'Uganda',
+            'rwanda' => 'Rwanda',
+            'south-africa' => 'South Africa',
+            'namibia' => 'Namibia',
+            'botswana' => 'Botswana',
+        ];
+        abort_unless(isset($names[$slug]), 404);
+        $name = $names[$slug];
+
+        $destination = Country::with('regions')->where('slug', $slug)->orWhere('name', $name)->first();
+        if (! $destination) {
+            $destination = (object) [
+                'name' => $name,
+                'slug' => $slug,
+                'description' => null,
+                'regions' => collect(),
+            ];
+        }
+
+        $v2safaris = ItineraryV2::where('published', true)
+            ->where('country', $name)
+            ->orderByDesc('featured')
+            ->get();
+        $safaris = $v2safaris->concat($this->activeTemplatesForCountry($name))->take(8);
+        $activities = Activity::with('translations')->where('published_on_website', true)->where('country', $name)->limit(6)->get();
+        $accommodations = Accommodation::where('published', true)->where('country', $name)->limit(6)->get();
+        $settings = WebsiteSetting::home();
+        $countryGuide = CmsPage::where('type', 'destination')->where('slug', $slug)->where('published', true)->first();
+
+        return view('public.destination-show', compact('settings', 'destination', 'safaris', 'activities', 'accommodations', 'name', 'slug', 'countryGuide'));
     }
 
     public function destinationSection(string $slug, string $section): View
@@ -135,17 +161,14 @@ class PublicController extends Controller
         $settings = WebsiteSetting::home();
         $destination = Country::with('regions')->where('slug', $slug)->orWhere('name', $name)->first();
         $v2safaris = ItineraryV2::where('published', true)->where('country', $name)->orderByDesc('featured')->get();
-        $templateSafaris = ItineraryTemplate::with(['days', 'destination', 'pricing'])
-            ->where('status', 'active')
-            ->get()
-            ->filter(fn ($t) => $t->destination?->country === $name)
-            ->map(fn ($t) => $this->templateToItinerary($t));
-        $safaris = $v2safaris->concat($templateSafaris)->take(3);
+        $safaris = $v2safaris->concat($this->activeTemplatesForCountry($name))->take(3);
         $activities = Activity::with('translations')->where('published_on_website', true)->where('country', $name)->limit(3)->get();
         $accommodations = Accommodation::where('published', true)->where('country', $name)->limit(3)->get();
         $sectionData = $sections[$section];
+        $journalPosts = $this->journalPostsFor($name, $slug, $section === 'journal' ? 9 : 3);
+        $travellerReviews = $section === 'reviews' ? config('public-reviews.'.$slug, []) : [];
 
-        return view('public.destination-section', compact('settings', 'destination', 'name', 'slug', 'section', 'sections', 'sectionData', 'safaris', 'activities', 'accommodations'));
+        return view('public.destination-section', compact('settings', 'destination', 'name', 'slug', 'section', 'sections', 'sectionData', 'safaris', 'activities', 'accommodations', 'journalPosts', 'travellerReviews'));
     }
 
     public function accommodations(): View
@@ -188,10 +211,17 @@ class PublicController extends Controller
             ->where('status', 'active')
             ->get()
             ->filter(function ($t) use ($country, $search) {
-                if ($country && ($t->destination?->country !== $country)) return false;
+                $destination = $t->destination;
+                $destinationCountry = $destination ? $destination->country : null;
+                $destinationName = $destination ? $destination->name : '';
+                if ($country && $destinationCountry !== $country) {
+                    return false;
+                }
                 if ($search) {
-                    $haystack = strtolower($t->name.' '.$t->trip_name.' '.($t->destination?->name ?? '').' '.($t->destination?->country ?? ''));
-                    if (strpos($haystack, strtolower($search)) === false) return false;
+                    $haystack = strtolower($t->name.' '.$t->trip_name.' '.$destinationName.' '.$destinationCountry);
+                    if (strpos($haystack, strtolower($search)) === false) {
+                        return false;
+                    }
                 }
                 return true;
             })
@@ -265,6 +295,21 @@ class PublicController extends Controller
         return view('public.itinerary-show', compact('settings', 'itinerary', 'related'));
     }
 
+    private function activeTemplatesForCountry(string $name)
+    {
+        return ItineraryTemplate::with(['days', 'destination', 'pricing'])
+            ->where('status', 'active')
+            ->get()
+            ->filter(function ($template) use ($name) {
+                $destination = $template->destination;
+
+                return $destination && $destination->country === $name;
+            })
+            ->map(function ($template) {
+                return $this->templateToItinerary($template);
+            });
+    }
+
     private function templateToItinerary(ItineraryTemplate $template): object
     {
         $firstPrice = $template->pricing->first();
@@ -291,9 +336,9 @@ class PublicController extends Controller
             'slug' => Str::slug($template->name),
             'summary' => $template->overview,
             'duration_days' => $template->duration_days,
-            'country' => $template->destination?->country,
+            'country' => $template->destination ? $template->destination->country : null,
             'region' => null,
-            'price_from' => $firstPrice?->price_per_person,
+            'price_from' => $firstPrice ? $firstPrice->price_per_person : null,
             'images' => $template->images ?? [],
             'inclusions' => $includes,
             'exclusions' => $excludes,
@@ -339,8 +384,9 @@ class PublicController extends Controller
     public function faqs(): View
     {
         $settings = WebsiteSetting::home();
+        $faqGroups = config('public-faqs', []);
 
-        return view('public.faqs', compact('settings'));
+        return view('public.faqs', compact('settings', 'faqGroups'));
     }
 
     public function contact(): View
@@ -351,12 +397,30 @@ class PublicController extends Controller
         return view('public.contact', compact('settings', 'destinations'));
     }
 
-    public function blog(): View
+    public function blog(Request $request): View
     {
-        $posts = CmsPage::where('type', 'blog')->where('published', true)->latest()->paginate(9);
+        $destination = trim((string) $request->get('destination'));
+        $slug = $this->destinationSlugFromName($destination);
+        $posts = CmsPage::where('type', 'blog')
+            ->where('published', true)
+            ->when($destination !== '', fn ($q) => $this->constrainJournalPosts($q, $destination, $slug))
+            ->latest('published_at')
+            ->paginate(9)
+            ->withQueryString();
         $settings = WebsiteSetting::home();
 
-        return view('public.blog', compact('settings', 'posts'));
+        return view('public.blog', compact('settings', 'posts', 'destination'));
+    }
+
+    public function cmsPage(string $slug): View
+    {
+        $post = CmsPage::where('slug', $slug)
+            ->whereIn('type', ['page', 'destination'])
+            ->where('published', true)
+            ->firstOrFail();
+        $settings = WebsiteSetting::home();
+
+        return view('public.cms-page', compact('settings', 'post'));
     }
 
     public function blogPost(string $slug): View
@@ -443,7 +507,8 @@ class PublicController extends Controller
             'settings' => $settings,
             'destinations' => $destinations,
             'selectedItinerary' => $selectedItinerary,
-            'prefillDestination' => $selectedItinerary['destination'] ?? $request->input('destination'),
+            'prefillDestination' => $selectedItinerary['country'] ?? $selectedItinerary['destination'] ?? $request->input('destination'),
+            'prefillInterest' => $request->input('interest'),
         ]);
     }
 
@@ -525,14 +590,14 @@ class PublicController extends Controller
             'adults' => max(1, 1 + $travellers->count()),
             'children' => 0,
             'infants' => 0,
-            'nights' => $proposal?->duration_days ? max(0, (int) $proposal->duration_days - 1) : 0,
+            'nights' => ($proposal && $proposal->duration_days) ? max(0, (int) $proposal->duration_days - 1) : 0,
             'source' => 'website_booking_form',
             'language' => 'en',
             'priority' => 'high',
             'status' => 'new',
             'travel_type' => 'safari',
-            'assigned_to' => $consultant?->id,
-            'assigned_consultant_id' => $consultant?->id,
+            'assigned_to' => $consultant ? $consultant->id : null,
+            'assigned_consultant_id' => $consultant ? $consultant->id : null,
             'currency' => $proposal->currency ?? 'USD',
             'flight_required' => !empty($data['arrival_flight_number']) || !empty($data['departure_flight_number']),
             'pickup_required' => !empty($data['arrival_airport']),
@@ -562,6 +627,8 @@ class PublicController extends Controller
             'travelers' => 'nullable|integer|min:1|max:120',
             'budget' => 'nullable|string|max:100',
             'safari_type' => 'nullable|string|max:120',
+            'nights' => 'nullable|integer|min:1|max:60',
+            'golf_interest' => 'nullable|string|max:40',
             'message' => 'nullable|string',
             'itinerary_id' => 'nullable|integer',
             'itinerary_slug' => 'nullable|string|max:180',
@@ -592,8 +659,10 @@ class PublicController extends Controller
             'Travel dates: '.($data['travel_date'] ?? 'Flexible'),
             'Adults: '.($adults ?: 'Not provided'),
             'Children: '.$children,
+            'Nights: '.($data['nights'] ?? 'Flexible'),
             'Budget range: '.($data['budget'] ?? 'To be discussed'),
             'Safari type: '.($data['safari_type'] ?? 'Tailor-made safari'),
+            'Golf: '.($data['golf_interest'] ?? 'Not specified'),
         ];
         $notesParts = array_merge($notesParts, array_filter($itineraryNotes));
         $notesParts[] = 'Message: '.($data['message'] ?? 'No additional notes.');
@@ -606,7 +675,7 @@ class PublicController extends Controller
             'country' => $data['country'] ?? null,
             'source' => 'website',
             'status' => 'new',
-            'assigned_consultant_id' => $salesConsultant?->id,
+            'assigned_consultant_id' => $salesConsultant ? $salesConsultant->id : null,
             'destination' => $data['destination'] ?? null,
             'travel_date' => $travelDate,
             'travelers' => $travelers,
@@ -620,7 +689,7 @@ class PublicController extends Controller
 
         $this->notifyInquiry($lead);
 
-        return back()->with('success', 'Thank you. Your safari inquiry has been received and saved in our CRM. A Shishi Footsteps specialist will contact you shortly.');
+        return back()->with('success', 'Thank you. Your proposal request is with a Shishi Footsteps trip advisor. We will be in touch shortly.');
     }
 
     private function resolveItineraryFromRequest(\Illuminate\Http\Request $request): ?array
@@ -674,7 +743,7 @@ class PublicController extends Controller
             'type' => 'template',
             'title' => $template->trip_name ?: $template->name,
             'slug' => $data['itinerary_slug'] ?? Str::slug($template->name),
-            'country' => $template->destination?->country,
+            'country' => $template->destination ? $template->destination->country : null,
             'days' => $template->duration_days,
             'url' => $data['itinerary_url'] ?? null,
         ];
@@ -715,7 +784,7 @@ class PublicController extends Controller
             'priority' => 'medium',
             'status' => 'new',
             'travel_type' => 'safari',
-            'accommodation_tier' => $data['budget'] && str_contains(strtolower($data['budget']), 'luxury') ? 'luxury' : null,
+            'accommodation_tier' => ! empty($data['budget'] ?? null) && str_contains(strtolower((string) $data['budget']), 'luxury') ? 'luxury' : null,
             'internal_notes' => $lead->notes,
             'special_requests' => $data['message'] ?? null,
             'itinerary_template_id' => $itinerary && ($itinerary['type'] ?? null) === 'template' ? $itinerary['id'] : null,
@@ -742,9 +811,47 @@ class PublicController extends Controller
         return back()->with('newsletter_success', 'You are on the list. Safari stories will find their way to you.');
     }
 
+    private function destinationSlugFromName(string $name): string
+    {
+        $map = [
+            'kenya' => 'kenya',
+            'tanzania' => 'tanzania',
+            'uganda' => 'uganda',
+            'rwanda' => 'rwanda',
+            'south africa' => 'south-africa',
+            'namibia' => 'namibia',
+            'botswana' => 'botswana',
+        ];
+
+        $key = strtolower(trim($name));
+
+        return $map[$key] ?? Str::slug($name);
+    }
+
+    private function constrainJournalPosts($query, string $name, string $slug)
+    {
+        return $query->where(function ($q) use ($name, $slug) {
+            $q->where('slug', 'like', $slug.'-%')
+                ->orWhere('title', 'like', '%'.$name.'%');
+        });
+    }
+
+    private function journalPostsFor(string $name, string $slug, int $limit = 6)
+    {
+        return $this->constrainJournalPosts(
+            CmsPage::where('type', 'blog')->where('published', true),
+            $name,
+            $slug,
+        )->latest('published_at')->limit($limit)->get();
+    }
+
     private function destinationSectionLibrary(string $slug, string $name): array
     {
-        $image = fn ($path) => asset('images/wordpress/'.$path);
+        // Destination heroes reuse WebsiteSetting media library (Unsplash + local itinerary covers).
+        // Avoids broken images/wordpress/* paths that are not present in this repo.
+        $settings = WebsiteSetting::home();
+        $hero = $settings->mediaFor($slug)['hero'];
+        $reviewImage = $settings->menuTilesFor($slug)[9] ?? $hero;
 
         $countryCopy = [
             'kenya' => [
@@ -752,54 +859,47 @@ class PublicController extends Controller
                 'parks' => 'Masai Mara, Amboseli, Samburu, Tsavo, Lake Nakuru and Laikipia give Kenya strong year-round safari variety, from elephant views beneath Kilimanjaro to private conservancy guiding.',
                 'highlights' => 'Great Migration months, big-cat sightings, scenic flights, cultural visits, family-friendly conservancies, Indian Ocean beaches and golf around Nairobi or Vipingo.',
                 'wildlife' => 'Lion, leopard, cheetah, elephant, rhino, giraffe, zebra, buffalo and exceptional birdlife can all fit the right Kenya route.',
-                'image' => 'lions-21787-scaled.jpg',
             ],
             'tanzania' => [
                 'summary' => 'Serengeti plains, Ngorongoro drama, Tarangire elephants, Kilimanjaro views and Zanzibar-style beach finales.',
                 'parks' => 'Serengeti, Ngorongoro, Tarangire, Lake Manyara, Ruaha and Nyerere create a powerful mix of classic safari, remote wilderness and seasonal migration moments.',
                 'highlights' => 'Migration crossings, crater wildlife, Kilimanjaro hikes, private camps, family safari pacing, southern parks and beach retreats.',
                 'wildlife' => 'Wildebeest, zebra, lion, elephant, buffalo, leopard, cheetah, flamingos and wide-open plains game define many Tanzanian safari days.',
-                'image' => 'elephant-8677546-scaled.jpg',
             ],
             'uganda' => [
-                'summary' => 'Gorilla forests, chimpanzees, crater lakes, Nile adventures and deeply personal wildlife encounters.',
+                'summary' => 'Gorilla forests, chimpanzees, crater lakes, Nile adventures, highland golf and deeply personal wildlife encounters.',
                 'parks' => 'Bwindi, Queen Elizabeth, Murchison Falls, Kibale and Lake Mburo each bring a different rhythm of forest, savannah, river and highland travel.',
-                'highlights' => 'Gorilla trekking, chimpanzee tracking, Nile rafting, birding, crater lake scenery, forest walks and warm local encounters.',
+                'highlights' => 'Gorilla trekking, chimpanzee tracking, Nile rafting, birding, crater lake scenery, forest walks, and golf at Tooro, Lake Victoria Serena or Lake Mburo.',
                 'wildlife' => 'Mountain gorillas, chimpanzees, tree-climbing lions, elephants, hippos, shoebill and remarkable birdlife are Uganda standouts.',
-                'image' => 'Nile-Uganda-scaled.jpg',
             ],
             'rwanda' => [
-                'summary' => 'A compact, polished journey with Kigali, Volcanoes National Park, gorillas, golden monkeys and refined highland lodges.',
-                'parks' => 'Volcanoes, Akagera and Nyungwe create a clear circuit of gorillas, savannah wildlife, forest canopy walks and lake-country pauses.',
-                'highlights' => 'Gorilla trekking, golden monkeys, Kigali culture, lake stays, canopy walks and smooth short-stay logistics.',
-                'wildlife' => 'Mountain gorillas, golden monkeys, chimpanzees, forest birds and Akagera savannah wildlife are Rwanda\'s key draws.',
-                'image' => 'gorilla-7708352-scaled.jpg',
+                'summary' => 'The Land of a Thousand Hills: gorilla trekking in Volcanoes National Park, Akagera savannah safari, Nyungwe forests, Twin Lakes scenery, Kigali culture and championship golf.',
+                'parks' => 'Volcanoes National Park for mountain gorillas and golden monkeys; Akagera National Park for Big Five savannah game drives and Lake Ihema boat cruises; Nyungwe Forest National Park for chimpanzees and canopy walks.',
+                'highlights' => 'Gorilla trekking permits, golden monkey tracking, Kigali city tours, Twin Lakes (Burera & Ruhondo), Akagera game drives, Lake Ihema sunsets, Nyungwe canopy walks, and golf at Kigali Golf Resort & Villas or Karenge Hills.',
+                'wildlife' => 'Mountain gorillas, golden monkeys, chimpanzees, lions, elephants, giraffes, hippos, crocodiles and rich forest and water birdlife.',
             ],
+
             'south-africa' => [
                 'summary' => 'Private reserves, Cape Town, wine country, dramatic coastlines, cuisine and some of Africa\'s finest golf.',
                 'parks' => 'Kruger, Greater Kruger private reserves, Addo, Pilanesberg and coastal reserves offer flexible safari options with excellent guiding and infrastructure.',
                 'highlights' => 'Cape Town, Winelands, whale coast, private reserve safari, fine dining, villas, coastal drives and championship golf.',
                 'wildlife' => 'Big Five viewing, rhino conservation, whales, penguins, marine life and diverse birding all fit different South Africa routes.',
-                'image' => 'Cape-Town-scaled.jpg',
             ],
             'namibia' => [
-                'summary' => 'Sculptural dunes, desert-adapted wildlife, remote lodges, stargazing and beautiful overland routes.',
+                'summary' => 'Sculptural dunes, desert-adapted wildlife, remote lodges, stargazing, overland routes and rare desert golf.',
                 'parks' => 'Etosha, Namib-Naukluft, Skeleton Coast, Damaraland and private desert reserves shape Namibia\'s most memorable journeys.',
-                'highlights' => 'Sossusvlei dunes, desert elephants, scenic flights, remote camps, photography, self-drive and privately guided overland travel.',
+                'highlights' => 'Sossusvlei dunes, desert elephants, scenic flights, remote camps, photography, self-drive, privately guided overland travel and optional Rossmund desert golf.',
                 'wildlife' => 'Desert-adapted elephant, rhino, oryx, springbok, giraffe, lion and rare arid-land species are Namibia highlights.',
-                'image' => 'namibianheart-camel-shishifootsteps-scaled.jpg',
             ],
             'botswana' => [
                 'summary' => 'Low-impact wilderness, Okavango waterways, elephant-rich landscapes and quiet luxury camps.',
                 'parks' => 'Okavango Delta, Chobe, Moremi, Savuti and the Makgadikgadi Pans each bring a distinct safari character.',
                 'highlights' => 'Mokoro rides, private concessions, huge elephant herds, mobile camps, predator viewing and water-based safari days.',
                 'wildlife' => 'Elephants, wild dogs, lion, leopard, buffalo, hippo, giraffe, zebra and seasonal birdlife are central to Botswana.',
-                'image' => 'elephants-1065632-scaled.jpg',
             ],
         ];
 
         $copy = $countryCopy[$slug];
-        $hero = $image($copy['image']);
 
         return [
             'safaris-and-tours' => [
@@ -892,6 +992,32 @@ class PublicController extends Controller
                     'Wildlife is never guaranteed, so we plan around strong habitats, trusted guides, sensible timing and realistic expectations.',
                 ],
                 'bullets' => ['Seasonal advice', 'Trusted guides', 'Conservation-minded travel', 'Photography pacing'],
+            ],
+            'journal' => [
+                'nav' => 'Journal',
+                'eyebrow' => 'Travel stories',
+                'title' => $name.' journal',
+                'heading' => 'Stories and field notes from '.$name,
+                'summary' => 'Seasonal advice, destination notes and travel stories to help shape a private '.$name.' safari.',
+                'image' => $hero,
+                'paragraphs' => [
+                    'The '.$name.' journal gathers practical planning notes alongside the kind of stories that stay with you after the journey: parks, lodges, wildlife seasons, and the quieter moments in between.',
+                    'Use these pieces as a starting point. When you are ready, we turn the ideas into a route that fits your dates, travellers and pace.',
+                ],
+                'bullets' => ['Seasonal planning notes', 'Park and lodge ideas', 'Wildlife and culture stories', 'Golf and beach add-ons'],
+            ],
+            'reviews' => [
+                'nav' => 'Travellers reviews',
+                'eyebrow' => 'From the field',
+                'title' => $name.' travellers reviews',
+                'heading' => 'What travellers say about '.$name,
+                'summary' => 'Private notes from guests who travelled '.$name.' with Shishi Footsteps — safari days, lodges, golf and the quieter moments in between.',
+                'image' => $reviewImage,
+                'paragraphs' => [
+                    'These are journeys we planned: conservancies and crater mornings, gorilla hours, Cape light, desert silence and Delta water. Each review sits with the country it belongs to.',
+                    'If a detail here sounds like your kind of travel, tell us your dates. A private proposal is the next honest step.',
+                ],
+                'bullets' => ['Private guiding', 'Lodges we actually use', 'Honest pacing', 'Golf and beach when they earn their place'],
             ],
         ];
     }

@@ -67,6 +67,13 @@ Route::get('/about', [PublicController::class, 'about'])->name('public.about');
 Route::get('/contact', [PublicController::class, 'contact'])->name('public.contact');
 Route::get('/blog', [PublicController::class, 'blog'])->name('public.blog');
 Route::get('/blog/{slug}', [PublicController::class, 'blogPost'])->name('public.blog.post');
+Route::get('/privacy-policy', fn () => app(PublicController::class)->cmsPage('privacy-policy'))->name('public.privacy');
+Route::get('/terms-conditions', fn () => app(PublicController::class)->cmsPage('terms-conditions'))->name('public.terms');
+Route::get('/pages/{slug}', [PublicController::class, 'cmsPage'])->name('public.pages.show');
+Route::get('/book-safari', fn () => redirect()->route('public.booking'))->name('public.book-safari');
+Route::get('/journal', fn () => redirect()->route('public.blog'))->name('public.journal');
+Route::get('/luxury-golf-tours', fn () => redirect()->route('public.golf'))->name('public.luxury-golf');
+
 Route::get('/booking', [PublicController::class, 'booking'])->name('public.booking');
 Route::get('/booking-form/{token?}', [PublicController::class, 'bookingForm'])->name('public.booking.form');
 Route::post('/booking-form/{token?}', [PublicController::class, 'submitBookingForm'])->name('public.booking.form.submit');

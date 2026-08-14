@@ -1,0 +1,71 @@
+{
+  "title": "Shishi Footsteps Media Integrity Report",
+  "generated_at": "2026-08-13",
+  "architecture_preserved": true,
+  "summary": {
+    "broken_images_fixed": "All images/wordpress/* references removed or replaced; destination heroes now use WebsiteSetting media library.",
+    "wrong_country_imagery_fixed": "Uganda, Rwanda (incl. Nyungwe), Namibia, South Africa packages/activities no longer use Kenya/Tanzania/Botswana covers.",
+    "videos_fixed": "Home/golf YouTube ID set to working Shishi video iG5nlWiP9Ro (previous 1CYVG70ZbyQ unavailable via oEmbed).",
+    "vite_build": "public/build/manifest.json generated via npm run build."
+  },
+  "files_changed": [
+    "app/Http/Controllers/PublicController.php",
+    "app/Models/WebsiteSetting.php",
+    "resources/views/components/public/header.blade.php",
+    "resources/views/public/home.blade.php",
+    "database/seeders/MediaIntegritySeeder.php",
+    "database/seeders/DatabaseSeeder.php",
+    "database/seeders/WordPressContentSeeder.php",
+    "database/seeders/DestinationCountriesSeeder.php",
+    "database/seeders/RwandaContentSeeder.php",
+    "public/build/* (Vite production assets)"
+  ],
+  "missing_assets_repaired": [
+    {
+      "was": "public/images/wordpress/* (entire folder missing from repo)",
+      "used_by": ["destinationSectionLibrary", "header golf mega-menu"],
+      "fix": "Switched to WebsiteSetting Unsplash+local library and golf Unsplash URLs already used on golf.blade.php"
+    }
+  ],
+  "images_replaced_and_why": [
+    {"scope": "Destination section heroes (all countries)", "why": "Broken images/wordpress filenames"},
+    {"scope": "Header golf mega-menu", "why": "Broken images/wordpress golf assets"},
+    {"scope": "WebsiteSetting destination galleries", "why": "Cross-country mixing (e.g. Uganda using Kenya/Tanzania covers, Namibia using Botswana)"},
+    {"scope": "Uganda packages/activities", "why": "Incorrect Tanzania/Kenya cover images"},
+    {"scope": "Rwanda packages/activities + Nyungwe", "why": "Incorrect Tanzania/Kenya covers; Nyungwe now forest imagery"},
+    {"scope": "South Africa packages", "why": "Incorrect Tanzania/Kenya covers"},
+    {"scope": "Namibia package", "why": "Incorrect Botswana cover; now dunes/desert"}
+  ],
+  "videos_repaired": [
+    {
+      "page": "home",
+      "old": "1CYVG70ZbyQ",
+      "new": "iG5nlWiP9Ro",
+      "why": "Old ID returns oEmbed 404; new ID is a working Shishi Footsteps YouTube video already used on golf"
+    },
+    {
+      "page": "golf",
+      "value": "iG5nlWiP9Ro",
+      "why": "Persisted in CMS so golf hero remains consistent"
+    }
+  ],
+  "could_not_recover": [
+    "Original WordPress media files under public/images/wordpress/ were never committed to git and were not found at simple live /wp-content/uploads paths. Luxury Unsplash equivalents matching existing project URL style were used instead."
+  ],
+  "validation": {
+    "home": 200,
+    "destinations_kenya_uganda_rwanda_namibia_south_africa": 200,
+    "golf": 200,
+    "nyungwe_package": 200,
+    "wordpress_refs_remaining_on_checked_pages": 0,
+    "wrong_package_country_imagery_remaining": 0,
+    "vite_manifest_present": true
+  },
+  "recommendations_not_auto_applied": [
+    "Obtain original Shishi/WordPress photo library from the client and store under public/images/wordpress or public/images/destinations for fully branded ownership (avoid third-party Unsplash dependency long-term).",
+    "Provide a preferred safari (non-golf) YouTube ID if home hero should not share the golf video.",
+    "Add lodge-specific photography for accommodation records where Unsplash/generic safari stills are used.",
+    "Optionally download curated Unsplash assets into public/images/ for offline resilience.",
+    "Review CMS open_graph_image per major landing page for social sharing quality."
+  ]
+}

@@ -88,6 +88,9 @@ class KenyaWheelsSafariTemplateSeeder extends Seeder
 
         $hotelIds = [];
         foreach ($hotels as $h) {
+            $h['country'] = $h['country'] ?? 'Kenya';
+            $h['location'] = $h['location'] ?? 'Kenya';
+            $h['status'] = $h['status'] ?? 'active';
             $h['created_at'] = now(); $h['updated_at'] = now();
             $hotelIds[] = DB::table('hotels')->insertGetId($h);
         }
